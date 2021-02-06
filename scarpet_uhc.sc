@@ -8,6 +8,18 @@ global_players = {};
 global_settings = {};
 global_status = {};
 
+__on_start() -> (
+    load_status();
+    load_settings();
+    load_players();
+);
+
+__on_close() -> (
+    save_status();
+    save_settings();
+    save_players();
+);
+
 load_status() -> (
     defaut_status = {
         'game' -> 'pending',
@@ -99,15 +111,20 @@ save_players() -> (
     write_file('players', 'json', global_players);
 );
 
-__on_start() -> (
-    load_status();
-    load_settings();
-    load_players();
+generate_hub() -> (
+    volume([-11, 200, -11], [10, 205, 10],
+        edge_count = 0;
+        if(_x == -11 || _x == 10, edge_count += 1);
+        if(_y == 200 || _y == 205, edge_count += 1);
+        if(_z == -11 || _z == 10, edge_count += 1);
+        print(player('*'), _x +' '+ _y +' '+ _z + ' - ' + edge_count);
+        if(
+            edge_count == 0, set(_x, _y, _z, 'air'),
+            edge_count == 1, set(_x, _y, _z, 'barrier'),
+            edge_count == 2, set(_x, _y, _z, 'glass'),
+            edge_count == 3, set(_x, _y, _z, 'bedrock'),
+        );
+    );
 );
-__on_start();
 
-__on_close() -> (
-    save_status();
-    save_settings();
-    save_players();
-);
+__on_start();
