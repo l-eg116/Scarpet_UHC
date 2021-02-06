@@ -111,16 +111,23 @@ save_players() -> (
     write_file('players', 'json', global_players);
 );
 
+shiny_floor()->(
+    blocks = ['orange','magenta','light_blue','yellow','lime','pink','cyan','purple','blue','brown','green','red','white'] + '_stained_glass';
+
+    return(blocks:floor(rand(length(blocks))))
+);
+
 generate_hub() -> (
     volume([-11, 200, -11], [10, 205, 10],
         edge_count = 0;
         if(_x == -11 || _x == 10, edge_count += 1);
         if(_y == 200 || _y == 205, edge_count += 1);
         if(_z == -11 || _z == 10, edge_count += 1);
-        print(player('*'), _x +' '+ _y +' '+ _z + ' - ' + edge_count);
+
         if(
             edge_count == 0, set(_x, _y, _z, 'air'),
-            edge_count == 1, set(_x, _y, _z, 'barrier'),
+            edge_count == 1 && _y == 200, set(_x, _y, _z, shiny_floor()),
+            edge_count == 1 && _y != 200, set(_x, _y, _z, 'barrier'),
             edge_count == 2, set(_x, _y, _z, 'glass'),
             edge_count == 3, set(_x, _y, _z, 'bedrock'),
         );
