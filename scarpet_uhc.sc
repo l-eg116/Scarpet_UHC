@@ -10,8 +10,13 @@ global_status = {};
 
 load_status() -> (
     defaut_status = {
-        '' -> '',
-    }; // TODO
+        'game' -> 'pending',
+        'time' -> 0,
+        'border' -> 'static',
+        'border_size' -> 750,
+        'total_teams' -> 0,
+        'total_players' -> 0,
+    };
 
     loaded_status = load_app_data();
     if(!loaded_status, 
@@ -32,8 +37,35 @@ save_status() -> (
 
 load_settings() -> (
     default_settings = {
-        '' -> '',
-    }; // TODO
+        'border' -> {
+            'start' -> 750,
+            'end' -> 150,
+            'speed' -> 1,
+        },
+        'timer' -> {
+            'border' -> 20*60*90, // aka 90 minutes
+            'nether_closing' -> -1,
+            'final_heal' -> -1,
+        },
+        'gamerules' -> {
+            'mode' -> 'teams',
+            'day_light_cycle' -> false,
+            // 'day_time' -> 6000,
+            'allow_nether' -> true,
+            'player_drop_gapple' -> true,
+            'natural_regeneration' -> false,
+            'final_heal_amount' -> 0,
+            // 'cut_clean' -> false,
+            'death_by_creeper' -> true,
+            // 'death_message' -> true,
+        },
+        'teams' -> {
+            'friendly_fire' -> true,
+            'show_nametag' -> true,
+            'see_invisible' -> true,
+            'collision' -> true,
+        },
+    };
 
     loaded_settings = read_file('settings', 'json');
     if(!loaded_settings, 
