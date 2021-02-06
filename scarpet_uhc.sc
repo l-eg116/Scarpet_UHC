@@ -45,7 +45,7 @@ load_settings() -> (
     );
 
     logger('debug', 'Current settings : ' + global_settings);
-)
+);
 
 save_settings() -> (
     logger('info', '[Scarpet UHC] Saving current settings...');
@@ -60,7 +60,7 @@ load_players() -> (
     );
 
     logger('debug', 'Current settings : ' + global_settings);
-)
+);
 
 save_players() -> (
     logger('info', '[Scarpet UHC] Saving players...');
