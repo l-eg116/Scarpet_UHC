@@ -98,3 +98,16 @@ save_players() -> (
     logger('info', '[Scarpet UHC] Saving players...');
     write_file('players', 'json', global_players);
 );
+
+__on_start() -> (
+    load_status();
+    load_settings();
+    load_players();
+);
+__on_start();
+
+__on_close() -> (
+    save_status();
+    save_settings();
+    save_players();
+);
