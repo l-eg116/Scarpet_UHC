@@ -150,9 +150,30 @@ update_teams(...players) -> (
             team_property(entity_id(_), 'color', 'gray');
             team_property(entity_id(_), 'prefix', '[Spec] ');
             ,
-            team_property(entity_id(_), 'color', global_players:_:'team');
-            team_property(entity_id(_), 'prefix', '🗡 ');
+            // team_property(entity_id(_), 'color', global_players:_:'team');
+            team_property(entity_id(_), 'prefix', add_format_color(' 🗡 ', global_players:_:'team'));
         );
+    );
+);
+
+add_format_color(text, color) -> (
+    if(
+        color == 'aqua', return(format('c'+text)),
+        color == 'black', return(format('k'+text)),
+        color == 'blue', return(format('t'+text)),
+        color == 'dark_aqua', return(format('q'+text)),
+        color == 'dark_blue', return(format('v'+text)),
+        color == 'dark_gray', return(format('f'+text)),
+        color == 'dark_green', return(format('e'+text)),
+        color == 'dark_purple', return(format('p'+text)),
+        color == 'dark_red', return(format('n'+text)),
+        color == 'gold', return(format('d'+text)),
+        color == 'gray', return(format('g'+text)),
+        color == 'green', return(format('l'+text)),
+        color == 'light_purple', return(format('m'+text)),
+        color == 'red', return(format('r'+text)),
+        color == 'yellow', return(format('y'+text)),
+        color == 'white', return(format('w'+text)),
     );
 );
 
