@@ -148,10 +148,20 @@ update_teams(...players) -> (
 
         if(global_players:_:'team' == 'spectator',
             team_property(entity_id(_), 'color', 'gray');
-            team_property(entity_id(_), 'prefix', '[Spec] ');
+            team_property(entity_id(_), 'prefix', '<O> ');
+            team_property(entity_id(_), 'suffix', '');
             ,
             // team_property(entity_id(_), 'color', global_players:_:'team');
+            team_property(entity_id(_), 'color', 'white');
             team_property(entity_id(_), 'prefix', add_format_color(' 🗡 ', global_players:_:'team'));
+
+            if(global_players:_:'alive',
+                team_property(entity_id(_), 'color', 'white');
+                team_property(entity_id(_), 'suffix', '');
+                ,
+                team_property(entity_id(_), 'color', 'gray');
+                team_property(entity_id(_), 'suffix', format('n  ☠'));
+            );
         );
     );
 );
