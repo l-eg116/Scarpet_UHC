@@ -12,6 +12,7 @@ __on_start() -> (
     load_status();
     load_settings();
     load_players();
+    generate_hub();
 );
 
 __on_close() -> (
@@ -20,6 +21,7 @@ __on_close() -> (
     save_players();
 );
 
+// # Starting fuctions
 load_status() -> (
     defaut_status = {
         'game' -> 'pending',
@@ -132,6 +134,31 @@ generate_hub() -> (
             edge_count == 3, set(_x, _y, _z, 'bedrock'),
         );
     );
+
+    run('setworldspawn 0 200 0'); // TODO : Maybe add a settings for that ?
+);
+
+// # Events
+__on_player_connects(player) -> (
+    default_player_state = {
+        'team' -> 'spectator',
+        'alive' -> true,
+        'online' -> true,
+    };
+
+    if(!global_players~(player~'uuid'),
+        global_players:(player~'uuid') = default_player_state; 
+    );
+
+    global_players:(player~'uuid'):'online' = true;
+
+    save_players();
+);
+
+__on_player_disconnects(player, reason) -> (
+    global_players:(player~'uuid'):'online' = false;
+
+    save_players();
 );
 
 __on_start();
