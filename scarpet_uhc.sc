@@ -138,6 +138,24 @@ generate_hub() -> (
     run('setworldspawn 0 200 0'); // TODO : Maybe add a settings for that ?
 );
 
+// # Personal teams management
+update_teams(...players) -> (
+    if(!players, players = keys(global_players));
+
+    for(players,
+        team_add(entity_id(_));
+        team_add(entity_id(_), entity_id(_));
+
+        if(global_players:_:'team' == 'spectator',
+            team_property(entity_id(_), 'color', 'gray');
+            team_property(entity_id(_), 'prefix', '[Spec] ');
+            ,
+            team_property(entity_id(_), 'color', global_players:_:'team');
+            team_property(entity_id(_), 'prefix', '🗡 ');
+        );
+    );
+);
+
 // # Events
 __on_player_connects(player) -> (
     default_player_state = {
