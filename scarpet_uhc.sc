@@ -23,7 +23,7 @@ __on_close() -> (
 
 // # Starting fuctions
 load_status() -> (
-    defaut_status = {
+    default_status = {
         'game' -> 'pending',
         'time' -> 0,
         'border' -> 'static',
