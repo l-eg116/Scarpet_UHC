@@ -153,6 +153,15 @@ __on_player_connects(player) -> (
     global_players:(player~'uuid'):'online' = true;
 
     save_players();
+    
+    if(global_status:'game' == 'pending',
+        modify(player, 'location', 0, 203, 0, 0, 0);
+        modify(player, 'gamemode', 'adventure');
+        modify(player, 'health', 20);
+        modify(player, 'hunger', 20);
+        modify(player, 'saturation', 20);
+        modify(player, 'invulnerable', true);
+    );
 );
 
 __on_player_disconnects(player, reason) -> (
