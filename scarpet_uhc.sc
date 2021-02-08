@@ -21,7 +21,7 @@ __on_close() -> (
     save_players();
 );
 
-// # Starting fuctions
+// # Loading and saving
 load_status() -> (
     default_status = {
         'game' -> 'pending',
@@ -121,6 +121,7 @@ save_players() -> (
     write_file('players', 'json', global_players);
 );
 
+// # Hub generation
 shiny_floor()->(
     blocks = ['orange','magenta','light_blue','yellow','lime','pink','cyan','purple','blue','brown','green','red','white'] + '_stained_glass';
 
@@ -199,6 +200,41 @@ add_format_color(text, color) -> (
         color == 'red', return(format('r'+text)),
         color == 'yellow', return(format('y'+text)),
         color == 'white', return(format('w'+text)),
+    );
+);
+
+// # Joining a team
+__on_player_right_clicks_block(player, item_tuple, hand, block, face, hitvec) -> (
+    if(global_status:'game' == 'pending',
+        block_to_team = {
+            'light_gray_stained_glass' -> 'spectator',
+            'gray_stained_glass' -> 'spectator',
+            'black_stained_glass' -> 'spectator',
+
+            'light_blue_wool' -> 'aqua',
+            'black_wool' -> 'black',
+            'blue_wool' -> 'blue',
+            'cyan_wool' -> 'dark_aqua',
+            'purple_wool' -> 'dark_blue',
+            'gray_wool' -> 'dark_gray',
+            'green_wool' -> 'dark_green',
+            'magenta_wool' -> 'dark_purple',
+            'brown_wool' -> 'dark_red',
+            'orange_wool' -> 'gold',
+            'light_gray_wool' -> 'gray',
+            'lime_wool' -> 'green',
+            'pink_wool' -> 'light_purple',
+            'red_wool' -> 'red',
+            'yellow_wool' -> 'yellow',
+            'white_wool' -> 'white',
+        };
+
+        if(block_to_team~str(block),
+            global_players:(player~'uuid'):'team' = block_to_team:str(block);
+            update_teams(player~'uuid');
+
+            // TODO add some kind of feedback
+        );
     );
 );
 
