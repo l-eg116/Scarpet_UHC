@@ -143,6 +143,8 @@ update_teams(...players) -> (
     if(!players, players = keys(global_players));
 
     for(players,
+        if(!entity_id(_), continue());
+
         team_add(entity_id(_));
         team_add(entity_id(_), entity_id(_));
 
@@ -156,8 +158,13 @@ update_teams(...players) -> (
             team_property(entity_id(_), 'prefix', add_format_color(' 🗡 ', global_players:_:'team'));
 
             if(global_players:_:'alive',
-                team_property(entity_id(_), 'color', 'white');
-                team_property(entity_id(_), 'suffix', '');
+                if(global_players:_:'online',
+                    team_property(entity_id(_), 'color', 'white');
+                    team_property(entity_id(_), 'suffix', '');
+                    ,
+                    team_property(entity_id(_), 'color', 'white');
+                    team_property(entity_id(_), 'suffix', format('d  | Offline'));
+                );
                 ,
                 team_property(entity_id(_), 'color', 'gray');
                 team_property(entity_id(_), 'suffix', format('n  ☠'));
@@ -200,6 +207,7 @@ __on_player_connects(player) -> (
     );
 
     global_players:(player~'uuid'):'online' = true;
+    update_teams(player~'uuid');
 
     save_players();
     
@@ -215,6 +223,7 @@ __on_player_connects(player) -> (
 
 __on_player_disconnects(player, reason) -> (
     global_players:(player~'uuid'):'online' = false;
+    update_teams(player~'uuid');
 
     save_players();
 );
