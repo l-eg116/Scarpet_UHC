@@ -30,6 +30,7 @@ load_status() -> (
         'border_size' -> 750,
         'total_teams' -> 0,
         'total_players' -> 0,
+        'pvp' -> false,
     };
 
     loaded_status = load_app_data();
@@ -270,6 +271,12 @@ __on_player_disconnects(player, reason) -> (
     update_teams(player~'uuid');
 
     save_players();
+);
+
+__on_player_attacks_entity(player, entity) -> (
+    if(entity~'type' == 'player' && !global_status:'pvp',
+        modify(player, 'effect', 'weakness', 1, 255, true, true);
+    );
 );
 
 __on_start();
