@@ -3,7 +3,7 @@ __config()-> {
     'stay_loaded' -> 'true',
     'command_permission' -> 'ops',
     'commands' -> {
-        'team join <team> <players>' -> ['comm_team_join'],
+        'team join <players> <team>' -> ['comm_team_join'],
         'team leave <players>' -> ['comm_team_join', 'spectator'],
     },
     'arguments' -> {
@@ -131,7 +131,7 @@ save_players() -> (
 );
 
 // # Commands
-comm_team_join(team, players) -> (
+comm_team_join(players, team) -> (
     count = for(players,
         team_join(player(_), team);
     );
