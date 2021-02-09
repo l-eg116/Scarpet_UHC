@@ -5,6 +5,7 @@ __config()-> {
     'commands' -> {
         'team join <players> <team>' -> ['comm_team_join'],
         'team leave <players>' -> ['comm_team_join', 'spectator'],
+        'team empty <team>' -> ['comm_team_empty'],
     },
     'arguments' -> {
         'team' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
@@ -136,6 +137,17 @@ comm_team_join(players, team) -> (
         team_join(player(_), team);
     );
     print(str('Added %d player%s to team %s.', count, if(count == 1, '', 's'), team));
+);
+
+comm_team_empty(team) -> (
+    count = for(keys(global_players),
+        if(global_players:_:'team' == team,
+            global_players:_:'team' = 'spectator';
+        );
+    );
+    update_teams();
+
+    print(str('Removed %d player%s from team %s.', count, if(count == 1, '', 's'), team));
 );
 
 // # Hub generation
