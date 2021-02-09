@@ -2,6 +2,14 @@ __config()-> {
     'scope' -> 'global',
     'stay_loaded' -> 'true',
     'command_permission' -> 'ops',
+    'commands' -> {
+        'team join <team> <players>' -> ['comm_team_join'],
+        'team leave <players>' -> ['comm_team_join', 'spectator'],
+    },
+    'arguments' -> {
+        'team' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
+                   'dark_purple', 'dark_red', 'gold', 'gray', 'green', 'light_purple', 'red', 'yellow', 'white',]},
+    },
 };
 
 global_players = {};
@@ -122,6 +130,14 @@ save_players() -> (
     write_file('players', 'json', global_players);
 );
 
+// # Commands
+comm_team_join(team, players) -> (
+    count = for(players,
+        team_join(player(_), team);
+    );
+    print(str('Added %d player%s to team %s.', count, if(count == 1, '', 's'), team));
+);
+
 // # Hub generation
 shiny_floor()->(
     blocks = ['orange','magenta','light_blue','yellow','lime','pink','cyan','purple','blue','brown','green','red','white'] + '_stained_glass';
@@ -204,6 +220,11 @@ add_format_color(text, color) -> (
     );
 );
 
+team_join(player, team) -> (
+    global_players:(player~'uuid'):'team' = team;
+    update_teams(player~'uuid');
+);
+
 // # Joining a team
 __on_player_right_clicks_block(player, item_tuple, hand, block, face, hitvec) -> (
     if(global_status:'game' == 'pending',
@@ -231,8 +252,7 @@ __on_player_right_clicks_block(player, item_tuple, hand, block, face, hitvec) ->
         };
 
         if(block_to_team~str(block),
-            global_players:(player~'uuid'):'team' = block_to_team:str(block);
-            update_teams(player~'uuid');
+            team_join(player, block_to_team:str(block));
 
             // TODO add some kind of feedback
         );
