@@ -51,7 +51,7 @@ load_status() -> (
         global_status = default_status;
         logger('info', '[Scarpet UHC] No app data found, loading defaults...');
         ,
-        global_status = parse_nbt(loaded_status);
+        global_status = default_status + parse_nbt(loaded_status);
         logger('info', '[Scarpet UHC] Found pre-existing app data, loading...');
     );
 
@@ -108,7 +108,7 @@ load_settings() -> (
         global_settings = default_settings;
         logger('info', '[Scarpet UHC] No settings found, loading defaults...');
         ,
-        global_settings = loaded_settings;
+        global_settings = default_settings + loaded_settings;
         logger('info', '[Scarpet UHC] Found settings.json, loading...');
     );
 
