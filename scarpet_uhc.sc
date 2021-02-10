@@ -184,6 +184,7 @@ update_teams(...players) -> (
         if(!entity_id(_), continue());
 
         team_add(entity_id(_));
+        team_leave(entity_id(_));
         team_add(entity_id(_), entity_id(_));
 
         if(global_players:_:'team' == 'spectator',
@@ -193,18 +194,20 @@ update_teams(...players) -> (
             ,
             // team_property(entity_id(_), 'color', global_players:_:'team');
             team_property(entity_id(_), 'color', 'white');
-            team_property(entity_id(_), 'prefix', add_format_color(' 🗡 ', global_players:_:'team'));
 
             if(global_players:_:'alive',
                 if(global_players:_:'online',
                     team_property(entity_id(_), 'color', 'white');
+                    team_property(entity_id(_), 'prefix', add_format_color(' 🗡 ', global_players:_:'team'));
                     team_property(entity_id(_), 'suffix', '');
                     ,
                     team_property(entity_id(_), 'color', 'white');
-                    team_property(entity_id(_), 'suffix', format('d  | Offline'));
+                    team_property(entity_id(_), 'prefix', add_format_color('o 🗡 ', global_players:_:'team'));
+                    team_property(entity_id(_), 'suffix', '');
                 );
                 ,
                 team_property(entity_id(_), 'color', 'gray');
+                team_property(entity_id(_), 'prefix', add_format_color(' 🗡 ', global_players:_:'team'));
                 team_property(entity_id(_), 'suffix', format('n  ☠'));
             );
         );
