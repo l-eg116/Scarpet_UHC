@@ -13,7 +13,7 @@ __config()-> {
         'team' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
                    'dark_purple', 'dark_red', 'gold', 'gray', 'green', 'light_purple', 'red', 'yellow', 'white',]},
         'teamSize' -> {'type' -> 'int', 'min' -> 1, 'suggest' -> [3]},
-        'force' -> {'type' -> 'bool', 'min' -> 1},
+        'force' -> {'type' -> 'bool'},
     },
 };
 
@@ -170,7 +170,7 @@ comm_team_randomize(team_size, force) -> (
 
     for(team_list,
         team = _;
-        while(team_size(team) <= team_size, team_size,
+        while(team_size(team) < team_size, team_size,
             team_join(randomized_players:i, team);
             i += 1;
         );
@@ -221,9 +221,6 @@ update_teams(...players) -> (
             team_property(entity_id(_), 'prefix', '<O> ');
             team_property(entity_id(_), 'suffix', '');
             ,
-            // team_property(entity_id(_), 'color', global_players:_:'team');
-            team_property(entity_id(_), 'color', 'white');
-
             if(global_players:_:'alive',
                 if(global_players:_:'online',
                     team_property(entity_id(_), 'color', 'white');
@@ -345,7 +342,7 @@ __on_player_disconnects(player, reason) -> (
 
 __on_player_attacks_entity(player, entity) -> (
     if(entity~'type' == 'player' && !global_status:'pvp',
-        modify(player, 'effect', 'weakness', 1, 255, true, true);
+        modify(player, 'effect', 'weakness', 1, 255, false, false);
     );
 );
 
