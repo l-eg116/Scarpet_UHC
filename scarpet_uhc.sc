@@ -100,6 +100,7 @@ load_settings() -> (
             'show_nametag' -> true,
             // 'see_invisible' -> true,
             'collision' -> true,
+            'start_radius' -> 500,
         },
     };
 
@@ -270,6 +271,42 @@ team_size(team) -> (
     for(keys(global_players),
         global_players:_:'team' == team
     );
+);
+
+// # Team spreading
+team_count() -> (
+    team_list = {};
+    for(keys(global_players),
+        team_list += global_players:_:'team'
+    );
+    delete(team_list:'spectator');
+
+    return(length(team_list));
+);
+
+spread_radius_from_distance(nb_team, distance) -> (
+    angle = deg((2*pi) / nb_team) ;
+    spread_radius = distance / (sqrt(2*(1 - cos(angle))));
+    return(round(spread_radius));
+);
+
+spread_coords(nb_team) -> (
+    angle = deg((2 * pi) / nb_team);
+    random_factor = rand(360);
+    coord = [];
+
+    loop(nb_team,
+        x = cos(_ * angle + random_factor) * global_settings:'teams':'start_radius';
+        z = sin(_ * angle + random_factor) * global_settings:'teams':'start_radius';
+        y = top('motion', [round(x), 0, round(z)]) + 1;
+        coord += [round(x), y, round(z)];
+    );
+
+    return(coord);
+);
+
+spread_teams(...coords) -> (
+    null;
 );
 
 // # Joining a team
