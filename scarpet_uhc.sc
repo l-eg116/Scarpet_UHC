@@ -6,10 +6,14 @@ __config()-> {
         'team join <players> <team>' -> ['comm_team_join'],
         'team leave <players>' -> ['comm_team_join', 'spectator'],
         'team empty <team>' -> ['comm_team_empty'],
+        'team randomize <teamSize>' -> ['comm_team_randomize', true],
+        'team randomize <teamSize> <force>' -> ['comm_team_randomize'],
     },
     'arguments' -> {
         'team' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
                    'dark_purple', 'dark_red', 'gold', 'gray', 'green', 'light_purple', 'red', 'yellow', 'white',]},
+        'teamSize' -> {'type' -> 'int', 'min' -> 1, 'suggest' -> [3]},
+        'force' -> {'type' -> 'bool', 'min' -> 1},
     },
 };
 
@@ -150,6 +154,31 @@ comm_team_empty(team) -> (
     print(str('Removed %d player%s from team %s.', count, if(count == 1, '', 's'), team));
 );
 
+comm_team_randomize(team_size, force) -> (
+    if(force, 
+        for(keys(global_players),
+            global_players:_:'team' = 'spectator'
+        );
+    );
+
+    team_list = [
+        'blue', 'red', 'green', 'yellow', 'aqua', 'light_purple', 'gold', 'dark_aqua', 'dark_blue', 'dark_green','dark_purple', 'dark_red', 'black', 'gray', 'dark_gray', 'white',
+    ];
+    randomized_players = filter(sort_key(player('all'), rand(1)), global_players:(_~'uuid'):'team' == 'spectator');
+    if(!randomized_players, return());
+    i = 0;
+
+    for(team_list,
+        team = _;
+        while(team_size(team) <= team_size, team_size,
+            team_join(randomized_players:i, team);
+            i += 1;
+        );
+
+        if(i >= length(randomized_players), break());
+    );
+);
+
 // # Hub generation
 shiny_floor()->(
     blocks = ['orange','magenta','light_blue','yellow','lime','pink','cyan','purple','blue','brown','green','red','white'] + '_stained_glass';
@@ -238,6 +267,12 @@ add_format_color(text, color) -> (
 team_join(player, team) -> (
     global_players:(player~'uuid'):'team' = team;
     update_teams(player~'uuid');
+);
+
+team_size(team) -> (
+    for(keys(global_players),
+        global_players:_:'team' == team
+    );
 );
 
 // # Joining a team
