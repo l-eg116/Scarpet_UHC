@@ -18,6 +18,8 @@ __config()-> {
         'settings reload' -> ['comm_settings_reload'],
         'settings list' -> ['comm_settings_list', 'all'],
         'settings list <category>' -> ['comm_settings_list'],
+        
+        'generate_world' -> ['comm_generate_world'],
     },
     'arguments' -> {
         'team' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
@@ -224,6 +226,12 @@ comm_settings_change(category, setting, value) -> (
         ,
         print(format('r The setting that you tried to change does not exist, or you tried to put in a wrong value'));
     );
+);
+
+comm_generate_world() -> (
+    border = global_settings:'border':'start';
+    command = str('/world_generator start %d %d %d %d __ 20 1200', -border, -border, border, border);
+    print(format(' Use world_generator app to pregenerate your world . Here is a cool premade command : ', 'i ' + command, '^ Click to execute !', '?' + command));
 );
 
 // # Hub generation
