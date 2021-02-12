@@ -77,7 +77,7 @@ load_settings() -> (
         },
         'gamerules' -> {
             'day_light_cycle' -> false,
-            // 'day_time' -> 6000,
+            'day_time' -> 6000,
             'allow_nether' -> true,
             'player_drop_gapple' -> true,
             'natural_regeneration' -> false,
@@ -98,7 +98,7 @@ load_settings() -> (
         'teams' -> {
             'friendly_fire' -> true,
             'show_nametag' -> true,
-            'collision' -> true,
+            // 'collision' -> true,
             'start_radius' -> 500,
         },
     };
@@ -108,7 +108,7 @@ load_settings() -> (
         global_settings = default_settings;
         logger('info', '[Scarpet UHC] No settings found, loading defaults...');
         ,
-        global_settings = default_settings + loaded_settings;
+        for(default_settings, global_settings:_ = default_settings:_ + loaded_settings:_);
         logger('info', '[Scarpet UHC] Found settings.json, loading...');
     );
 
