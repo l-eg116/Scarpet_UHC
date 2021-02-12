@@ -288,31 +288,32 @@ team_count() -> (
     return(length(team_listing()));
 );
 
-player_listing(online) -> (
+player_listing(team, online) -> (
     filter(keys(global_players),
         (global_players:_:'team' != 'spectator' && 
+         if(team != '', global_players:_:'team' == team, true) && 
          global_players:_:'alive' && 
         (global_players:_:'online' || !online))
     );
 );
 
-player_count(online) -> (
-    return(length(player_listing(online)));
+player_count(team, online) -> (
+    return(length(player_listing(team, online)));
 );
 
 // # Team spreading
-spread_radius_from_distance(nb_team, distance) -> (
-    angle = deg((2*pi) / nb_team) ;
+spread_radius_from_distance(distance) -> (
+    angle = deg((2*pi) / team_count()) ;
     spread_radius = distance / (sqrt(2*(1 - cos(angle))));
     return(round(spread_radius));
 );
 
-spread_coords(nb_team) -> (
-    angle = deg((2 * pi) / nb_team);
+spread_coords() -> (
+    angle = deg((2 * pi) / team_count());
     random_factor = rand(360);
     coord = [];
 
-    loop(nb_team,
+    loop(team_count(),
         x = cos(_ * angle + random_factor) * global_settings:'teams':'start_radius';
         z = sin(_ * angle + random_factor) * global_settings:'teams':'start_radius';
         y = top('motion', [round(x), 0, round(z)]) + 1;
@@ -322,8 +323,21 @@ spread_coords(nb_team) -> (
     return(coord);
 );
 
-spread_teams(...coords) -> (
-    null;
+spread_teams(coords) -> (
+    coords = sort_key(coords, rand(1));
+
+    if(!coords,
+        print(format('r Tried to spread teams but no set of coords were given. Are you sure there are teams to spread ?'));
+        logger('warn', 'Tried to spread teams but no set of coords were given. Are you sure there are teams to spread ?');
+        return();
+    );
+
+    for(team_listing(), i = _i;
+        for(player_listing(_, true),
+            modify(entity_id(_), 'location', 0, 0, 0, 0, 0);
+            modify(entity_id(_), 'pos', coords:i + [0.5, 0.5, 0.5]);
+        );
+    );
 );
 
 // # Joining a team
