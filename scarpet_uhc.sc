@@ -98,7 +98,6 @@ load_settings() -> (
         'teams' -> {
             'friendly_fire' -> true,
             'show_nametag' -> true,
-            // 'see_invisible' -> true,
             'collision' -> true,
             'start_radius' -> 500,
         },
@@ -213,29 +212,33 @@ update_teams(...players) -> (
     for(players,
         if(!entity_id(_), continue());
 
-        team_add(entity_id(_));
-        team_leave(entity_id(_));
-        team_add(entity_id(_), entity_id(_));
+        team_name = slice(global_players:_:'team', 0, 3) + '_' + slice(_, 0, 8);
+        uuid = _;
+
+        filter(team_list(), _~('_' + slice(uuid, 0, 8)) && team_remove(_));
+        team_add(team_name);
+        team_leave(team_name);
+        team_add(team_name, entity_id(_));
 
         if(global_players:_:'team' == 'spectator',
-            team_property(entity_id(_), 'color', 'gray');
-            team_property(entity_id(_), 'prefix', '<O> ');
-            team_property(entity_id(_), 'suffix', '');
+            team_property(team_name, 'color', 'gray');
+            team_property(team_name, 'prefix', '<O> ');
+            team_property(team_name, 'suffix', '');
             ,
             if(global_players:_:'alive',
                 if(global_players:_:'online',
-                    team_property(entity_id(_), 'color', 'white');
-                    team_property(entity_id(_), 'prefix', add_format_color(' 🗡 ', global_players:_:'team'));
-                    team_property(entity_id(_), 'suffix', '');
+                    team_property(team_name, 'color', 'white');
+                    team_property(team_name, 'prefix', add_format_color(' 🗡 ', global_players:_:'team'));
+                    team_property(team_name, 'suffix', '');
                     ,
-                    team_property(entity_id(_), 'color', 'white');
-                    team_property(entity_id(_), 'prefix', add_format_color('o 🗡 ', global_players:_:'team'));
-                    team_property(entity_id(_), 'suffix', '');
+                    team_property(team_name, 'color', 'white');
+                    team_property(team_name, 'prefix', add_format_color('o 🗡 ', global_players:_:'team'));
+                    team_property(team_name, 'suffix', '');
                 );
                 ,
-                team_property(entity_id(_), 'color', 'gray');
-                team_property(entity_id(_), 'prefix', add_format_color(' 🗡 ', global_players:_:'team'));
-                team_property(entity_id(_), 'suffix', format('n  ☠'));
+                team_property(team_name, 'color', 'gray');
+                team_property(team_name, 'prefix', add_format_color(' 🗡 ', global_players:_:'team'));
+                team_property(team_name, 'suffix', format('n  ☠'));
             );
         );
     );
@@ -299,6 +302,22 @@ player_listing(team, online) -> (
 
 player_count(team, online) -> (
     return(length(player_listing(team, online)));
+);
+
+// # Game start functions
+reset_player(player) -> (
+    modify(player, 'effect', );
+    modify(player, 'invulnerable', false);
+    modify(player, 'fire', false);
+    modify(player, 'health', 20);
+    modify(player, 'hunger', 20);
+    modify(player, 'saturation', 5);
+    modify(player, 'exhaustion', 0);
+    modify(player, 'absorption', 0);
+    modify(player, 'xp_level', 0);
+    modify(player, 'xp_progress', 0);
+    modify(player, 'xp_score', 0);
+    run(str('clear %s', player));
 );
 
 // # Team spreading
