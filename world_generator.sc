@@ -1,7 +1,7 @@
 __config() -> {'scope' -> 'global', 'stay_loaded'->'false',
 	'allow_command_conflicts' -> 'true',
 	'arguments' -> {
-		'function' -> {'type'->'term', 'options' -> ['pause', 'start', 'help'], 'suggest' -> ['pause', 'start', 'help']},
+		'function' -> {'type'->'term', 'options' -> ['pause', 'start', 'help', 'cancel', 'info']},
 		'cornerA' -> {'type'->'surfacelocation'},
 		'cornerB' -> {'type'->'surfacelocation'},
 		'chunkPerSec' -> {'type' -> 'int', 'min' -> 1, 'suggest' -> [20]},
@@ -51,7 +51,13 @@ __on_close() -> (
 );
 
 wg_help(subject) -> (
-	print('It is comming (sent '+subject+']')
+	if(
+		subject == 'help', print('help <function>  ->  This is what you are currently using'),
+		subject == 'start', print('start <cornerA> <cornerB> [inDimension] [chunkPerSec] [saveFrequency]  ->  Starts the world generation. Use __ or ___ for [inDimension] to generate the overworld and the nether or every dimension.'),
+		subject == 'pause', print('pause  ->  Pauses/Unpauses the current world generation task.'),
+		subject == 'cancel', print('cancel  ->  Cancels the current world generation task. There is no going back'),
+		subject == 'info', print('info  ->  Gives you all kind of cool info on the current generation task'),
+	);
 );
 
 wg_info() -> (
