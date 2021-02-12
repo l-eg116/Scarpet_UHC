@@ -56,6 +56,7 @@ load_status() -> (
         'total_teams' -> 0,
         'total_players' -> 0,
         'pvp' -> false,
+        'nether' -> true,
     };
 
     loaded_status = load_app_data();
@@ -91,6 +92,7 @@ load_settings() -> (
         'gamerules' -> {
             'day_light_cycle' -> false,
             'day_time' -> 6000,
+            'weather_cycle' -> false,
             'allow_nether' -> true,
             'player_drop_gapple' -> true,
             'natural_regeneration' -> false,
@@ -113,6 +115,7 @@ load_settings() -> (
             'show_nametag' -> true,
             // 'collision' -> true,
             'start_radius' -> 500,
+            'start_distance' -> 0,
         },
     };
 
@@ -449,6 +452,21 @@ __on_player_right_clicks_block(player, item_tuple, hand, block, face, hitvec) ->
 );
 
 // # Events
+__on_tick() -> (
+    if(
+        game_status:'game' == pending, (
+            modify(player('all'), 'health', 20);
+            modify(player('all'), 'hunger', 20);
+        )
+    );
+
+    if(!global_settings:'gamerules':'weather_cycle', weather('clear', 20*60*10));
+    if(!global_settings:'gamerules':'day_light_cycle', day_time(global_settings:'gamerules':'day_time'));
+    if(!global_status:'nether',
+        for(player('all'), modify(_, 'portal_timer', 0));
+    );
+);
+
 __on_player_connects(player) -> (
     default_player_state = {
         'team' -> 'spectator',
