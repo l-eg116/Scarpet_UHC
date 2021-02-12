@@ -1,3 +1,7 @@
+global_players = {};
+global_settings = {};
+global_status = {};
+
 __config()-> {
     'scope' -> 'global',
     'stay_loaded' -> 'true',
@@ -8,18 +12,20 @@ __config()-> {
         'team empty <team>' -> ['comm_team_empty'],
         'team randomize <teamSize>' -> ['comm_team_randomize', true],
         'team randomize <teamSize> <force>' -> ['comm_team_randomize'],
+
+        'settings <category> <setting> <settingValue>' -> ['comm_settings_change'],
     },
     'arguments' -> {
         'team' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
                    'dark_purple', 'dark_red', 'gold', 'gray', 'green', 'light_purple', 'red', 'yellow', 'white',]},
         'teamSize' -> {'type' -> 'int', 'min' -> 1, 'suggest' -> [3]},
         'force' -> {'type' -> 'bool'},
+
+        'category' -> {'type' -> 'term', 'suggester' -> _(args) -> (keys(global_settings))},
+        'setting' -> {'type' -> 'term', 'suggester' -> _(args) -> (keys(global_settings:(args:'category')))},
+        'settingValue' -> {'type' -> 'int', 'suggester' -> _(args) -> [global_settings:(args:'category'):(args:'setting')]},
     },
 };
-
-global_players = {};
-global_settings = {};
-global_status = {};
 
 __on_start() -> (
     load_status();
@@ -74,6 +80,7 @@ load_settings() -> (
             'border' -> 20*60*90, // aka 90 minutes
             'nether_closing' -> -1,
             'final_heal' -> -1,
+            'pvp' -> 20*60*10, // aka 10 minutes
         },
         'gamerules' -> {
             'day_light_cycle' -> false,
@@ -81,17 +88,17 @@ load_settings() -> (
             'allow_nether' -> true,
             'player_drop_gapple' -> true,
             'natural_regeneration' -> false,
-            'final_heal_amount' -> 0,
             'insomnia' -> false,
             'wandering_traders' -> false,
             'patrols' -> false,
             'raids' -> false,
         },
-        'settings' -> {
-            'mode' -> 'teams',
+        'other' -> {
+            'solo_mode' -> false,
             'ghost_players' -> true,
             'kill_ghosts_after' -> -1,
             'death_by_creeper' -> true,
+            'final_heal_amount' -> 0,
             // 'cut_clean' -> false,
             // 'death_message' -> true,
         },
@@ -176,6 +183,17 @@ comm_team_randomize(team_size, force) -> (
         );
 
         if(i >= length(randomized_players), break());
+    );
+);
+
+comm_settings_change(category, setting, value) -> (
+    value = number(value);
+    if(global_settings~category && global_settings:category~setting && value != null,
+        global_settings:category:setting = value;
+        save_settings();
+        print(str('Changed setting %s in category %s to %s', setting, category, value));
+        ,
+        print(format('r The setting that you tried to change does not exist, or you tried to put in a wrong value'));
     );
 );
 
