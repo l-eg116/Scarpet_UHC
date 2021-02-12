@@ -13,7 +13,11 @@ __config()-> {
         'team randomize <teamSize>' -> ['comm_team_randomize', true],
         'team randomize <teamSize> <force>' -> ['comm_team_randomize'],
 
-        'settings <category> <setting> <settingValue>' -> ['comm_settings_change'],
+        'settings change <category> <setting> <settingValue>' -> ['comm_settings_change'],
+        'settings reset' -> ['comm_settings_reset'],
+        'settings reload' -> ['comm_settings_reload'],
+        'settings list' -> ['comm_settings_list', 'all'],
+        'settings list <category>' -> ['comm_settings_list'],
     },
     'arguments' -> {
         'team' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
@@ -186,12 +190,37 @@ comm_team_randomize(team_size, force) -> (
     );
 );
 
+comm_settings_reset() -> (
+    global_settings = {};
+    save_settings();
+    load_settings();
+    save_settings();
+    print('All settings were reset and saved');
+);
+
+comm_settings_reload() -> (
+    load_settings();
+    print('All settings were reloaded from settings.json');
+);
+
+comm_settings_list(categories) -> (
+    categories = if(global_settings~categories, [categories], keys(global_settings));
+
+    print('Current settings : ');
+    for(sort(categories), category = _;
+        print(str(' ¤ %s :', title(category)));
+        for(sort(keys(global_settings:category)), 
+            print(str('   - %s : %d', replace(title(_), '_', ' '), global_settings:category:_));
+        );
+    );
+);
+
 comm_settings_change(category, setting, value) -> (
     value = number(value);
     if(global_settings~category && global_settings:category~setting && value != null,
         global_settings:category:setting = value;
         save_settings();
-        print(str('Changed setting %s in category %s to %s', setting, category, value));
+        print(str('Changed setting %s in "%s" to %s', setting, category, value));
         ,
         print(format('r The setting that you tried to change does not exist, or you tried to put in a wrong value'));
     );
