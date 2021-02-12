@@ -273,17 +273,34 @@ team_size(team) -> (
     );
 );
 
-// # Team spreading
-team_count() -> (
+// # Counting and listing
+team_listing() -> (
     team_list = {};
     for(keys(global_players),
         team_list += global_players:_:'team'
     );
     delete(team_list:'spectator');
 
-    return(length(team_list));
+    return(team_list);
 );
 
+team_count() -> (
+    return(length(team_listing()));
+);
+
+player_listing(online) -> (
+    filter(keys(global_players),
+        (global_players:_:'team' != 'spectator' && 
+         global_players:_:'alive' && 
+        (global_players:_:'online' || !online))
+    );
+);
+
+player_count(online) -> (
+    return(length(player_listing(online)));
+);
+
+// # Team spreading
 spread_radius_from_distance(nb_team, distance) -> (
     angle = deg((2*pi) / nb_team) ;
     spread_radius = distance / (sqrt(2*(1 - cos(angle))));
