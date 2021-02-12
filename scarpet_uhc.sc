@@ -237,6 +237,22 @@ comm_generate_world() -> (
     print(format(' Use world_generator app to pregenerate your world . Here is a cool premade command : ', 'i ' + command, '^ Click to execute !', '?' + command));
 );
 
+comm_game_top(player) -> (
+    player = player(player);
+
+    if(player~'dimension' != 'overworld',
+        in_dimension(player~'dimension', set(player~'pos', 'nether_portal'));
+        modify(player, 'portal_timer', 99999);
+        // schedule(1, 'comm_game_top', player);
+        ,
+        x = floor(player~'x') + 0.5;
+        z = floor(player~'z') + 0.5;
+        y = in_dimension('overworld', top('motion', [x, 0, z]) + 1);
+        modify(player, 'pos', [x, y, z]);
+    );
+    modify(player, 'effect', 'resistance', 20*10, 255, false, true);
+);
+
 // # Hub generation
 shiny_floor()->(
     blocks = ['orange','magenta','light_blue','yellow','lime','pink','cyan','purple','blue','brown','green','red','white'] + '_stained_glass';
@@ -463,7 +479,10 @@ __on_tick() -> (
     if(!global_settings:'gamerules':'weather_cycle', weather('clear', 20*60*10));
     if(!global_settings:'gamerules':'day_light_cycle', day_time(global_settings:'gamerules':'day_time'));
     if(!global_status:'nether',
-        for(player('all'), modify(_, 'portal_timer', 0));
+        for(player('all'), 
+            modify(_, 'portal_timer', 0);
+            if(_~'dimension' != 'overworld', comm_game_top(_));
+        );
     );
 );
 
