@@ -90,7 +90,7 @@ load_settings() -> (
             'pvp' -> 20*60*10, // aka 10 minutes
         },
         'gamerules' -> {
-            'day_light_cycle' -> false,
+            'daylight_cycle' -> false,
             'day_time' -> 6000,
             'weather_cycle' -> false,
             'allow_nether' -> true,
@@ -100,6 +100,8 @@ load_settings() -> (
             'wandering_traders' -> false,
             'patrols' -> false,
             'raids' -> false,
+            'announce_advancements' -> true,
+            'fire_tick' -> true,
         },
         'other' -> {
             'solo_mode' -> false,
@@ -394,6 +396,19 @@ reset_player(player) -> (
     run(str('clear %s', player));
 );
 
+update_gamerules() -> (
+    run(str('gamerule doDaylightCycle %b', global_settings:'gamerules':'daylight_cycle'));
+    run(str('gamerule doWeatherCycle %b', global_settings:'gamerules':'weather_cycle'));
+    run(str('gamerule naturalRegeneration %b', global_settings:'gamerules':'natural_regeneration'));
+    run(str('gamerule doInsomnia %b', global_settings:'gamerules':'insomnia'));
+    run(str('gamerule doTraderSpawning %b', global_settings:'gamerules':'wandering_traders'));
+    run(str('gamerule doPatrolSpawning %b', global_settings:'gamerules':'patrols'));
+    run(str('gamerule disableRaids %b', !global_settings:'gamerules':'raids'));
+    run(str('gamerule announceAdvancements %b', global_settings:'gamerules':'announce_advancements'));
+    run(str('gamerule doFireTick %b', global_settings:'gamerules':'fire_tick'));
+    null;
+);
+
 // # Team spreading
 spread_radius_from_distance(distance) -> (
     angle = deg((2*pi) / team_count()) ;
@@ -477,7 +492,7 @@ __on_tick() -> (
     );
 
     if(!global_settings:'gamerules':'weather_cycle', weather('clear', 20*60*10));
-    if(!global_settings:'gamerules':'day_light_cycle', day_time(global_settings:'gamerules':'day_time'));
+    if(!global_settings:'gamerules':'daylight_cycle', day_time(global_settings:'gamerules':'day_time'));
     if(!global_status:'nether',
         for(player('all'), 
             modify(_, 'portal_timer', 0);
