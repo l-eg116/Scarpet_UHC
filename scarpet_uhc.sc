@@ -109,6 +109,7 @@ load_settings() -> (
             'kill_ghosts_after' -> -1,
             'death_by_creeper' -> true,
             'final_heal_amount' -> 0,
+            'start_invul_time' -> 20*60,
             // 'cut_clean' -> false,
             // 'death_message' -> true,
         },
@@ -118,6 +119,7 @@ load_settings() -> (
             // 'collision' -> true,
             'start_radius' -> 500,
             'start_distance' -> 0,
+            'use_distance' -> 0,
         },
     };
 
@@ -191,6 +193,8 @@ comm_team_randomize(team_size, force) -> (
         while(team_size(team) < team_size, team_size,
             team_join(randomized_players:i, team);
             i += 1;
+
+            if(i >= length(randomized_players), break());
         );
 
         if(i >= length(randomized_players), break());
@@ -381,6 +385,44 @@ player_count(team, online) -> (
 );
 
 // # Game start functions
+game_start() -> (
+    global_status:'game' = 'starting';
+
+    for(global_players, if(!global_players:_:'online', global_players:_:'team' = 'spectator'));
+
+    for(player('all'), 
+        global_players:(_~'uuid'):'alive' = true;
+
+        if(global_players:(_~'uuid'):'team' == 'spectator',
+            modify(_, 'gamemode', 'spectator');
+            modify(_, 'location', 0, 205, 0, 0, 0);
+            ,
+            reset_player(_);
+            modify(_, 'gamemode', 'survival');
+            modify(_, 'effect', 'resistance', global_settings:'other':'start_invul_time', 255, false, true);
+        );
+    );
+
+    update_gamerules();
+    day_time(0);
+
+    if(global_settings:'teams':'use_distance', 
+        global_settings:'teams':'start_radius' = spread_radius_from_distance()
+    );
+    spread_teams(spread_coords());
+
+    global_status = {
+        'game' -> 'started',
+        'time' -> 0,
+        'border' -> 'static',
+        'border_size' -> global_settings:'border':'start',
+        'total_teams' -> team_count(),
+        'total_players' -> player_count('', true),
+        'pvp' -> false,
+        'nether' -> true,
+    };
+);
+
 reset_player(player) -> (
     modify(player, 'effect', );
     modify(player, 'invulnerable', false);
@@ -394,6 +436,8 @@ reset_player(player) -> (
     modify(player, 'xp_progress', 0);
     modify(player, 'xp_score', 0);
     run(str('clear %s', player));
+    run(str('recipe take %s *', player));
+    run(str('advancement revoke %s everything', player));
 );
 
 update_gamerules() -> (
@@ -409,8 +453,9 @@ update_gamerules() -> (
     null;
 );
 
-// # Team spreading
-spread_radius_from_distance(distance) -> (
+// ## Team spreading
+spread_radius_from_distance() -> (
+    distance = global_settings:'teams':'start_distance';
     angle = deg((2*pi) / team_count()) ;
     spread_radius = distance / (sqrt(2*(1 - cos(angle))));
     return(round(spread_radius));
@@ -442,7 +487,7 @@ spread_teams(coords) -> (
 
     for(team_listing(), i = _i;
         for(player_listing(_, true),
-            modify(entity_id(_), 'location', 0, 0, 0, 0, 0);
+            modify(entity_id(_), 'location', 0, 205, 0, 0, 0);
             modify(entity_id(_), 'pos', coords:i + [0.5, 0.5, 0.5]);
         );
     );
