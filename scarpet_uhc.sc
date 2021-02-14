@@ -361,7 +361,9 @@ team_size(team) -> (
 team_listing() -> (
     team_list = {};
     for(keys(global_players),
-        team_list += global_players:_:'team'
+        if(global_players:_:'online',
+            team_list += global_players:_:'team'
+        )
     );
     delete(team_list:'spectator');
 
