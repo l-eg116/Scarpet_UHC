@@ -38,6 +38,7 @@ __on_start() -> (
     load_settings();
     load_players();
     generate_hub();
+    bossbar('scarpet_uhc:info_bar');
 );
 
 __on_close() -> (
@@ -527,10 +528,30 @@ __on_player_right_clicks_block(player, item_tuple, hand, block, face, hitvec) ->
     );
 );
 
+// # Bossbar
+update_bossbar() -> (
+    bossbar('scarpet_uhc:info_bar', 'color', 'red');
+    bossbar('scarpet_uhc:info_bar', 'visible', true);
+    bossbar('scarpet_uhc:info_bar', 'players', player('all'));
+
+    if(
+        global_status:'game' == 'pending',
+            bossbar('scarpet_uhc:info_bar', 'style', 'progress');
+            bossbar('scarpet_uhc:info_bar', 'value', 0);
+            bossbar('scarpet_uhc:info_bar', 'max', 100);
+            bossbar('scarpet_uhc:info_bar', 'name', 
+                format('d Scarpet UHC', '  - ', 'br '+player_count('', 1), 'gi /', 'gi '+length(player('all')), 'n  players',
+                ' , ', 'mb '+team_count(), 'p  teams')
+            );
+    );
+);
+
 // # Events
 __on_tick() -> (
+    update_bossbar();
+
     if(
-        game_status:'game' == pending, (
+        game_status:'game' == 'pending', (
             modify(player('all'), 'health', 20);
             modify(player('all'), 'hunger', 20);
         )
