@@ -545,6 +545,18 @@ update_bossbar() -> (
                 format('d Scarpet UHC', '  - ', 'br '+player_count('', 1), 'gi /', 'gi '+length(player('all')), 'n  players',
                 ' , ', 'mb '+team_count(), 'p  teams')
             );
+        , global_status:'game' == 'started',
+            bossbar('scarpet_uhc:info_bar', 'style', 'notched_20');
+            bossbar('scarpet_uhc:info_bar', 'value', global_status:'time');
+            bossbar('scarpet_uhc:info_bar', 'max', 24000);
+            bossbar('scarpet_uhc:info_bar', 'name', 
+                format(
+                ' Day ', str('e %d', global_status:'time'/24000), '  - ',
+                'bd '+player_count('', 0), 'r /'+global_status:'total_players', '  alive - ',
+                'mb '+team_count(), 'p /'+global_status:'total_teams', '  teams - ',
+                ' Border : ', 'c '+global_status:'border_size',
+                )
+            );
     );
 );
 
