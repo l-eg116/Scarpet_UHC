@@ -358,10 +358,10 @@ team_size(team) -> (
 );
 
 // # Counting and listing
-team_listing() -> (
+team_listing(online, alive) -> (
     team_list = {};
     for(keys(global_players),
-        if(global_players:_:'online',
+        if((global_players:_:'online' || !online) && (global_players:_:'alive' || !alive),
             team_list += global_players:_:'team'
         )
     );
@@ -370,21 +370,21 @@ team_listing() -> (
     return(team_list);
 );
 
-team_count() -> (
-    return(length(team_listing()));
+team_count(online, alive) -> (
+    return(length(team_listing(online, alive)));
 );
 
-player_listing(team, online) -> (
+player_listing(team, online, alive) -> (
     filter(keys(global_players),
         (global_players:_:'team' != 'spectator' && 
          if(team != '', global_players:_:'team' == team, true) && 
-         global_players:_:'alive' && 
+         (global_players:_:'alive' || !alive) && 
         (global_players:_:'online' || !online))
     );
 );
 
-player_count(team, online) -> (
-    return(length(player_listing(team, online)));
+player_count(team, online, alive) -> (
+    return(length(player_listing(team, online, alive)));
 );
 
 // # Game start functions
@@ -419,8 +419,8 @@ game_start() -> (
         'time' -> 0,
         'border' -> 'static',
         'border_size' -> global_settings:'border':'start',
-        'total_teams' -> team_count(),
-        'total_players' -> player_count('', true),
+        'total_teams' -> team_count(1, 1),
+        'total_players' -> player_count('', true, true),
         'pvp' -> false,
         'nether' -> true,
     };
@@ -459,17 +459,17 @@ update_gamerules() -> (
 // ## Team spreading
 spread_radius_from_distance() -> (
     distance = global_settings:'teams':'start_distance';
-    angle = deg((2*pi) / team_count()) ;
+    angle = deg((2*pi) / team_count(1, 1)) ;
     spread_radius = distance / (sqrt(2*(1 - cos(angle))));
     return(round(spread_radius));
 );
 
 spread_coords() -> (
-    angle = deg((2 * pi) / team_count());
+    angle = deg((2 * pi) / team_count(1, 1));
     random_factor = rand(360);
     coord = [];
 
-    loop(team_count(),
+    loop(team_count(1, 1),
         x = cos(_ * angle + random_factor) * global_settings:'teams':'start_radius';
         z = sin(_ * angle + random_factor) * global_settings:'teams':'start_radius';
         y = top('motion', [round(x), 0, round(z)]) + 1;
@@ -488,8 +488,8 @@ spread_teams(coords) -> (
         return();
     );
 
-    for(team_listing(), i = _i;
-        for(player_listing(_, true),
+    for(team_listing(1, 1), i = _i;
+        for(player_listing(_, true, true),
             modify(entity_id(_), 'location', 0, 205, 0, 0, 0);
             modify(entity_id(_), 'pos', coords:i + [0.5, 0.5, 0.5]);
         );
@@ -542,8 +542,8 @@ update_bossbar() -> (
             bossbar('scarpet_uhc:info_bar', 'value', 0);
             bossbar('scarpet_uhc:info_bar', 'max', 100);
             bossbar('scarpet_uhc:info_bar', 'name', 
-                format('d Scarpet UHC', '  - ', 'br '+player_count('', 1), 'gi /', 'gi '+length(player('all')), 'n  players',
-                ' , ', 'mb '+team_count(), 'p  teams')
+                format('d Scarpet UHC', '  - ', 'br '+player_count('', 1, 0), 'gi /', 'gi '+length(player('all')), 'n  players',
+                ' , ', 'mb '+team_count(1, 0), 'p  teams')
             );
         , global_status:'game' == 'started',
             bossbar('scarpet_uhc:info_bar', 'style', 'notched_20');
@@ -552,8 +552,8 @@ update_bossbar() -> (
             bossbar('scarpet_uhc:info_bar', 'name', 
                 format(
                 ' Day ', str('e %d', global_status:'time'/24000), '  - ',
-                'bd '+player_count('', 0), 'r /'+global_status:'total_players', '  alive - ',
-                'mb '+team_count(), 'p /'+global_status:'total_teams', '  teams - ',
+                'bd '+player_count('', 0, 1), 'r /'+global_status:'total_players', '  alive - ',
+                'mb '+team_count(0, 1), 'p /'+global_status:'total_teams', '  teams - ',
                 ' Border : ', 'c '+global_status:'border_size',
                 )
             );
