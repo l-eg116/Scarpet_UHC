@@ -414,6 +414,7 @@ game_start() -> (
     );
     spread_teams(spread_coords());
 
+    logger('info', '[Scarpet UHC] Game started')
     global_status = {
         'game' -> 'started',
         'time' -> 0,
@@ -551,7 +552,7 @@ update_bossbar() -> (
             bossbar('scarpet_uhc:info_bar', 'max', 24000);
             bossbar('scarpet_uhc:info_bar', 'name', 
                 format(
-                ' Day ', str('e %d', global_status:'time'/24000), '  - ',
+                ' Day ', str('e %d', global_status:'time'/24000 + 1), '  - ',
                 'bd '+player_count('', 0, 1), 'r /'+global_status:'total_players', '  alive - ',
                 'mb '+team_count(0, 1), 'p /'+global_status:'total_teams', '  teams - ',
                 ' Border : ', 'c '+global_status:'border_size',
@@ -560,15 +561,44 @@ update_bossbar() -> (
     );
 );
 
+// # UHC events
+event_new_day(day) -> (
+    null;
+);
+
+event_start() -> (
+    print(player('all'), format('db Game started !'));
+    print(player('all'), format('  - PvP : ', str('r %d min', global_settings:'timer':'pvp'/1200)));
+    print(player('all'), format('  - Border : ', str('p %d min', global_settings:'timer':'border'/1200)));
+    if(global_settings:'timer':'nether_closing'>0, 
+        print(player('all'), format('  - Nether closing : ', str('e %d min', global_settings:'timer':'nether_closing'/1200))));
+    if(global_settings:'timer':'final_heal'>0, 
+        print(player('all'), format('  - Final heal : ', str('d %d min', global_settings:'timer':'final_heal'/1200))));
+    
+    print(player('all'), 'Good luck !');
+);
+
 // # Events
 __on_tick() -> (
     update_bossbar();
 
     if(
-        game_status:'game' == 'pending', (
-            modify(player('all'), 'health', 20);
-            modify(player('all'), 'hunger', 20);
-        )
+        global_status:'game' == 'pending', (
+            for(player('all'), 
+                modify(_, 'health', 20);
+                modify(_, 'hunger', 20);
+            );
+        ),
+        global_status:'game' == 'started', (
+            if(global_status:'time' == 0, event_start());
+            if(global_status:'time'%24000 == 0, event_new_day(global_status:'time'/24000));
+            if(global_status:'time' == global_settings:'timer':'pvp', null);
+            if(global_status:'time' == global_settings:'timer':'nether_closing', null);
+            if(global_status:'time' == global_settings:'timer':'border', null);
+            if(global_status:'time' == global_settings:'timer':'final_heal', null);
+
+            global_status:'time' += 1;
+        ),
     );
 
     if(!global_settings:'gamerules':'weather_cycle', weather('clear', 20*60*10));
