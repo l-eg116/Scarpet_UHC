@@ -548,7 +548,6 @@ __on_player_right_clicks_block(player, item_tuple, hand, block, face, hitvec) ->
 update_bossbar() -> (
     bossbar('scarpet_uhc:info_bar', 'color', 'red');
     bossbar('scarpet_uhc:info_bar', 'visible', true);
-    bossbar('scarpet_uhc:info_bar', 'players', player('all'));
 
     if(
         global_status:'game' == 'pending',
@@ -653,6 +652,8 @@ __on_player_connects(player) -> (
         modify(player, 'saturation', 20);
         modify(player, 'invulnerable', true);
     );
+
+    bossbar('scarpet_uhc:info_bar', 'add_player', player);
 );
 
 __on_player_disconnects(player, reason) -> (
