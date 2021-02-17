@@ -539,7 +539,12 @@ __on_player_right_clicks_block(player, item_tuple, hand, block, face, hitvec) ->
         if(block_to_team~str(block),
             team_join(player, block_to_team:str(block));
 
-            // TODO add some kind of feedback
+            if(block_to_team:str(block) == 'spectator',
+                display_title(player, 'actionbar', format('f You are now a spectator', ));
+                ,
+                team_name = replace(block_to_team:str(block), '_', ' ');
+                display_title(player, 'actionbar', add_format_color(' You joined team '+team_name, block_to_team:str(block)));
+            );
         );
     );
 );
