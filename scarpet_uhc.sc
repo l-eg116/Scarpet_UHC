@@ -20,6 +20,9 @@ __config()-> {
         'settings list <category>' -> ['comm_settings_list'],
         
         'generate_world' -> ['comm_generate_world'],
+
+        'game top <players>' -> ['comm_game_top'],
+        'game start' -> ['comm_game_start'],
     },
     'arguments' -> {
         'team' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
@@ -244,20 +247,30 @@ comm_generate_world() -> (
     print(format(' Use world_generator app to pregenerate your world . Here is a cool premade command : ', 'i ' + command, '^ Click to execute !', '?' + command));
 );
 
-comm_game_top(player) -> (
-    player = player(player);
-
-    if(player~'dimension' != 'overworld',
-        in_dimension(player~'dimension', set(player~'pos', 'nether_portal'));
-        modify(player, 'portal_timer', 99999);
-        // schedule(1, 'comm_game_top', player);
+comm_game_start() -> (
+    if(global_status:'game' == 'pending',
+        game_start();
         ,
-        x = floor(player~'x') + 0.5;
-        z = floor(player~'z') + 0.5;
-        y = in_dimension('overworld', top('motion', [x, 0, z]) + 1);
-        modify(player, 'pos', [x, y, z]);
+        print(format('r Game already started'));
+    )
+);
+
+comm_game_top(players) -> (
+    for(players, 
+        player = player(_);
+
+        if(player~'dimension' != 'overworld',
+            in_dimension(player~'dimension', set(player~'pos', 'nether_portal'));
+            modify(player, 'portal_timer', 99999);
+            // schedule(1, 'comm_game_top', player);
+            ,
+            x = floor(player~'x') + 0.5;
+            z = floor(player~'z') + 0.5;
+            y = in_dimension('overworld', top('motion', [x, 0, z]) + 1);
+            modify(player, 'pos', [x, y, z]);
+        );
+        modify(player, 'effect', 'resistance', 20*10, 255, false, true);
     );
-    modify(player, 'effect', 'resistance', 20*10, 255, false, true);
 );
 
 // # Hub generation
