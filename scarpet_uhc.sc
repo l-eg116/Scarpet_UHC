@@ -674,4 +674,15 @@ __on_player_attacks_entity(player, entity) -> (
     );
 );
 
+__on_player_dies(player) -> (
+    if(global_status:'game' == 'started',
+        modify(player, 'health', 20);
+        schedule(0, _(player) -> (
+            modify(player, 'gamemode', 'spectator');
+            global_players:(player~'uuid'):'alive' = false;
+            update_teams(player~'uuid');
+        ), player);
+    );
+);
+
 __on_start();
