@@ -414,7 +414,7 @@ game_start() -> (
     );
     spread_teams(spread_coords());
 
-    logger('info', '[Scarpet UHC] Game started')
+    logger('info', '[Scarpet UHC] Game started');
     global_status = {
         'game' -> 'started',
         'time' -> 0,
@@ -562,8 +562,13 @@ update_bossbar() -> (
 );
 
 // # UHC events
-event_new_day(day) -> (
-    null;
+event_new_day() -> (
+    display_title(player('all'), 'title', format(' Day ', str('e %d', global_status:'time'/24000 + 1)), 10, 75, 5);
+    for(player('all'),
+        display_title(_, 'subtitle', format(' You made ', 'r '+statistic(_, 'killed', 'player'), '  kill'+if(statistic(_, 'killed', 'player') == 1, '', 's')));
+    );
+
+    sound('minecraft:block.bell.use', [0, 0, 0], 99999, 1, 'master');
 );
 
 event_start() -> (
@@ -591,7 +596,7 @@ __on_tick() -> (
         ),
         global_status:'game' == 'started', (
             if(global_status:'time' == 0, event_start());
-            if(global_status:'time'%24000 == 0, event_new_day(global_status:'time'/24000));
+            if(global_status:'time'%24000 == 0, event_new_day());
             if(global_status:'time' == global_settings:'timer':'pvp', null);
             if(global_status:'time' == global_settings:'timer':'nether_closing', null);
             if(global_status:'time' == global_settings:'timer':'border', null);
