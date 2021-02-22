@@ -42,6 +42,8 @@ __on_start() -> (
     load_players();
     generate_hub();
     bossbar('scarpet_uhc:info_bar');
+    scoreboard_add('health', 'health');
+    scoreboard_display('list', 'health');
 );
 
 __on_close() -> (
