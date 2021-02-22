@@ -600,6 +600,20 @@ event_start() -> (
     print(player('all'), 'Good luck !');
 );
 
+event_pvp() -> (
+    global_status:'pvp' = true;
+
+    print(player('all'), format('n Pvp', '  is now enabled !'));
+    sound('minecraft:entity.arrow.hit_player', [0, 0, 0], 99999, 1, 'master');
+);
+
+event_nether_closing() -> (
+    global_status:'nether' = false;
+
+    print(player('all'), format(' The nether is now', 'n  closed'));
+    sound('minecraft:entity.ghast.hurt', [0, 0, 0], 99999, 1, 'master');
+);
+
 // # Events
 __on_tick() -> (
     update_bossbar();
@@ -614,8 +628,8 @@ __on_tick() -> (
         global_status:'game' == 'started', (
             if(global_status:'time' == 0, event_start());
             if(global_status:'time'%24000 == 0, event_new_day());
-            if(global_status:'time' == global_settings:'timer':'pvp', null);
-            if(global_status:'time' == global_settings:'timer':'nether_closing', null);
+            if(global_status:'time' == global_settings:'timer':'pvp', event_pvp());
+            if(global_status:'time' == global_settings:'timer':'nether_closing', event_nether_closing());
             if(global_status:'time' == global_settings:'timer':'border', null);
             if(global_status:'time' == global_settings:'timer':'final_heal', null);
 
