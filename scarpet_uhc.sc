@@ -122,7 +122,6 @@ load_settings() -> (
         'teams' -> {
             'friendly_fire' -> true,
             'show_nametag' -> true,
-            // 'collision' -> true,
             'start_radius' -> 500,
             'start_distance' -> 0,
             'use_distance' -> 0,
