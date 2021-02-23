@@ -32,7 +32,7 @@ __config()-> {
 
         'category' -> {'type' -> 'term', 'suggester' -> _(args) -> (keys(global_settings))},
         'setting' -> {'type' -> 'term', 'suggester' -> _(args) -> (keys(global_settings:(args:'category')))},
-        'settingValue' -> {'type' -> 'int', 'suggester' -> _(args) -> [global_settings:(args:'category'):(args:'setting')]},
+        'settingValue' -> {'type' -> 'float', 'suggester' -> _(args) -> [global_settings:(args:'category'):(args:'setting')]},
     },
 };
 
@@ -87,7 +87,7 @@ load_settings() -> (
         'border' -> {
             'start' -> 750,
             'end' -> 150,
-            'speed' -> 1,
+            'speed' -> 0.5,
         },
         'timer' -> {
             'border' -> 20*60*90, // aka 90 minutes
@@ -574,9 +574,26 @@ update_bossbar() -> (
                 ' Day ', str('e %d', global_status:'time'/24000 + 1), '  - ',
                 'bd '+player_count('', 0, 1), 'r /'+global_status:'total_players', '  alive - ',
                 'mb '+team_count(0, 1), 'p /'+global_status:'total_teams', '  teams - ',
-                ' Border : ', 'c '+global_status:'border_size',
+                ' Border : ', 'c '+round(global_status:'border_size'),
                 )
             );
+    );
+);
+
+update_border() -> (
+    if( global_status:'border' == 'moving' && global_status:'border_size' - global_settings:'border':'speed' <= global_settings:'border':'end', 
+            global_status:'border' = 'static';
+            global_status:'border_size' = global_settings:'border':'end';
+
+            run(str('worldborder set %f 1', 2*global_settings:'border':'end'));
+            event_border_end();
+        ,
+        global_status:'border' == 'moving',
+            global_status:'border_size' += -global_settings:'border':'speed';
+            run(str('worldborder add %f 1', -2*global_settings:'border':'speed'));
+        ,
+        global_status:'border' == 'static',
+            run(str('worldborder set %f', 2*global_status:'border_size'));
     );
 );
 
@@ -616,6 +633,17 @@ event_nether_closing() -> (
     sound('minecraft:entity.ghast.hurt', [0, 0, 0], 99999, 1, 'master');
 );
 
+event_border_start() -> (
+    global_status:'border' = 'moving';
+
+    print(player('all'), format(' The border has started moving !'));
+    sound('minecraft:entity.zombie.break_wooden_door', [0, 0, 0], 99999, 1, 'master');
+);
+
+event_border_end() -> (
+    print(player('all'), format(' The border has reached its destination'));
+);
+
 // # Events
 __on_tick() -> (
     update_bossbar();
@@ -632,8 +660,10 @@ __on_tick() -> (
             if(global_status:'time'%24000 == 0, event_new_day());
             if(global_status:'time' == global_settings:'timer':'pvp', event_pvp());
             if(global_status:'time' == global_settings:'timer':'nether_closing', event_nether_closing());
-            if(global_status:'time' == global_settings:'timer':'border', null);
+            if(global_status:'time' == global_settings:'timer':'border', event_border_start());
             if(global_status:'time' == global_settings:'timer':'final_heal', null);
+            
+            if(global_status:'time'%20 == 0, update_border());
 
             global_status:'time' += 1;
         ),
