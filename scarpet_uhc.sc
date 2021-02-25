@@ -386,7 +386,7 @@ team_listing(online, alive) -> (
     );
     delete(team_list:'spectator');
 
-    return(team_list);
+    return(keys(team_list));
 );
 
 team_count(online, alive) -> (
@@ -477,6 +477,22 @@ update_gamerules() -> (
     run(str('gamerule announceAdvancements %b', global_settings:'gamerules':'announce_advancements'));
     run(str('gamerule doFireTick %b', global_settings:'gamerules':'fire_tick'));
     null;
+);
+
+game_end() -> (
+    logger('info', '[Scarpet UHC] Game ended');
+    global_status:'game' = 'ended';
+
+    winner = team_listing(false, true):0;
+
+    for(player('all'),
+        if(global_players:(_~'uuid'):'team' == winner,
+            display_title(_, 'title', format('d You won !'), 10, 180, 10)
+        ,
+            display_title(_, 'title', format('n You lost !'), 10, 180, 10)
+        );
+    );
+    display_title(player('all'), 'subtitle', format(' Team ')+add_format_color(replace(' '+winner, '_', ' '), winner)+format('  won !'), 10, 180, 10)
 );
 
 // ## Team spreading
