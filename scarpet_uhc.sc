@@ -315,6 +315,12 @@ update_teams(...players) -> (
         team_leave(team_name);
         team_add(team_name, entity_id(_));
 
+        if(global_settings:'teams':'show_nametag',
+            team_property(team_name, 'nametagVisibility', 'always');
+        ,
+            team_property(team_name, 'nametagVisibility', 'never');
+        );
+
         if(global_players:_:'team' == 'spectator',
             team_property(team_name, 'color', 'gray');
             team_property(team_name, 'prefix', '<O> ');
