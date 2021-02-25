@@ -114,7 +114,7 @@ load_settings() -> (
             'ghost_players' -> true,
             'kill_ghosts_after' -> -1,
             'death_by_creeper' -> true,
-            'final_heal_amount' -> 0,
+            'final_heal_amount' -> 10,
             'start_invul_time' -> 20*60,
             // 'cut_clean' -> false,
             // 'death_message' -> true,
@@ -419,6 +419,7 @@ game_start() -> (
             modify(_, 'effect', 'resistance', global_settings:'other':'start_invul_time', 255, false, true);
         );
     );
+    update_teams();
 
     update_gamerules();
     day_time(0);
@@ -427,6 +428,8 @@ game_start() -> (
         global_settings:'teams':'start_radius' = spread_radius_from_distance()
     );
     spread_teams(spread_coords());
+
+    // TODO Add something that removes the hub on start
 
     logger('info', '[Scarpet UHC] Game started');
     global_status = {
