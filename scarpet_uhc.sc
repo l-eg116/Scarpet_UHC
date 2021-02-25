@@ -748,6 +748,15 @@ __on_player_dies(player) -> (
     if(global_status:'game' == 'started',
         modify(player, 'health', 20);
         sound('minecraft:entity.wither.spawn', [0, 0, 0], 99999, 1, 'master');
+
+        if(global_players:(player~'uuid'):'alive',
+            run(str('give %s player_head{SkullOwner:"%s"}', player, player));
+
+            if(global_settings:'gamerules':'player_drop_gapple',
+                run(str('give %s golden_apple', player));
+            );
+        );
+
         schedule(0, _(player) -> (
             modify(player, 'gamemode', 'spectator');
             global_players:(player~'uuid'):'alive' = false;
