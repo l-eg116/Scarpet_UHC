@@ -672,6 +672,15 @@ __on_tick() -> (
             if(global_status:'time' == global_settings:'timer':'border', event_border_start());
             if(global_status:'time' == global_settings:'timer':'final_heal', event_final_heal());
             
+            for(global_settings:'timer',
+                if(global_settings:'timer':_ == global_status:'time' + 20*60*10,
+                    print(player('all'), format('d '+replace(title(_), '_', ' '), '  in 10 mn'))
+                ,
+                global_settings:'timer':_ == global_status:'time' + 20*30,
+                    print(player('all'), format('d '+replace(title(_), '_', ' '), '  in 30 sec'))
+                );
+            );
+
             if(global_status:'time'%20 == 0, update_border());
 
             global_status:'time' += 1;
