@@ -117,7 +117,6 @@ load_settings() -> (
             'final_heal_amount' -> 10,
             'start_invul_time' -> 20*60,
             // 'cut_clean' -> false,
-            // 'death_message' -> true,
         },
         'teams' -> {
             'friendly_fire' -> true,
