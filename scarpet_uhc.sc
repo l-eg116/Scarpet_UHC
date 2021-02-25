@@ -674,10 +674,12 @@ __on_tick() -> (
             
             for(global_settings:'timer',
                 if(global_settings:'timer':_ == global_status:'time' + 20*60*10,
-                    print(player('all'), format('d '+replace(title(_), '_', ' '), '  in 10 mn'))
+                    print(player('all'), format('d '+replace(title(_), '_', ' '), '  in 10 mn'));
+                    sound('minecraft:block.note_block.pling', [0, 0, 0], 99999, 1, 'master');
                 ,
                 global_settings:'timer':_ == global_status:'time' + 20*30,
-                    print(player('all'), format('d '+replace(title(_), '_', ' '), '  in 30 sec'))
+                    print(player('all'), format('d '+replace(title(_), '_', ' '), '  in 30 sec'));
+                    sound('minecraft:block.note_block.bell', [0, 0, 0], 99999, 1, 'master');
                 );
             );
 
