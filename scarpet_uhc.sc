@@ -113,7 +113,7 @@ load_settings() -> (
             'solo_mode' -> false,
             'ghost_players' -> true,
             'kill_ghosts_after' -> -1,
-            'death_by_creeper' -> true,
+            // 'death_by_creeper' -> true, // Does not work due to a bug in scarpet
             'final_heal_amount' -> 10,
             'start_invul_time' -> 20*60,
             // 'cut_clean' -> false,
