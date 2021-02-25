@@ -737,6 +737,10 @@ __on_player_disconnects(player, reason) -> (
 __on_player_attacks_entity(player, entity) -> (
     if(entity~'type' == 'player' && !global_status:'pvp',
         modify(player, 'effect', 'weakness', 1, 255, false, false);
+    ,
+    entity~'type' == 'player' && !global_settings:'teams':'friendly_fire'
+        && global_players:(player~'uuid'):'team' == global_players:(entity~'uuid'):'team',
+        modify(player, 'effect', 'weakness', 1, 255, false, false);
     );
 );
 
