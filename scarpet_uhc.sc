@@ -643,6 +643,13 @@ event_border_end() -> (
     print(player('all'), format(' The border has reached its destination'));
 );
 
+event_final_heal() -> (
+    print(player('all'), format(' Final heal, you were healed ', 'r '+global_settings:'other':'final_heal_amount', '  HP'));
+    for(player('all'), modify(_, 'health', _~'health' + global_settings:'other':'final_heal_amount'));
+    
+    sound('minecraft:entity.zombie_villager.converted', [0, 0, 0], 99999, 1, 'master');
+);
+
 // # Events
 __on_tick() -> (
     update_bossbar();
@@ -660,7 +667,7 @@ __on_tick() -> (
             if(global_status:'time' == global_settings:'timer':'pvp', event_pvp());
             if(global_status:'time' == global_settings:'timer':'nether_closing', event_nether_closing());
             if(global_status:'time' == global_settings:'timer':'border', event_border_start());
-            if(global_status:'time' == global_settings:'timer':'final_heal', null);
+            if(global_status:'time' == global_settings:'timer':'final_heal', event_final_heal());
             
             if(global_status:'time'%20 == 0, update_border());
 
