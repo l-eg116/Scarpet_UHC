@@ -639,7 +639,7 @@ event_border_start() -> (
     global_status:'border' = 'moving';
 
     print(player('all'), format(' The border has started moving !'));
-    sound('minecraft:entity.zombie.break_wooden_door', [0, 0, 0], 99999, 1, 'master');
+    sound('minecraft:entity.zombie.attack_iron_door', [0, 0, 0], 99999, 1, 'master');
 );
 
 event_border_end() -> (
