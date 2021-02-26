@@ -410,6 +410,8 @@ player_count(team, online, alive) -> (
 game_start() -> (
     global_status:'game' = 'starting';
 
+    volume([-11, 200, -11], [10, 205, 10], set(_x, _y, _z, block('air')));
+
     for(global_players, if(!global_players:_:'online', global_players:_:'team' = 'spectator'));
 
     for(player('all'), 
@@ -433,8 +435,6 @@ game_start() -> (
         global_settings:'teams':'start_radius' = spread_radius_from_distance()
     );
     spread_teams(spread_coords());
-
-    // TODO Add something that removes the hub on start
 
     logger('info', '[Scarpet UHC] Game started');
     global_status = {
