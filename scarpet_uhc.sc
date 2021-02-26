@@ -600,6 +600,14 @@ update_bossbar() -> (
                 ' Border : ', 'c '+round(global_status:'border_size'),
                 )
             );
+        , global_status:'game' == 'ended',
+            bossbar('scarpet_uhc:info_bar', 'style', 'progress');
+            bossbar('scarpet_uhc:info_bar', 'value', 100);
+            bossbar('scarpet_uhc:info_bar', 'max', 100);
+            winner = team_listing(false, true):0;
+            bossbar('scarpet_uhc:info_bar', 'name', 
+                format(' Team ')+add_format_color(replace(' '+winner, '_', ' '), winner)+format('  won !')
+            );
     );
 );
 
