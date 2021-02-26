@@ -115,7 +115,7 @@ load_settings() -> (
             'kill_ghosts_after' -> -1,
             // 'death_by_creeper' -> true, // Does not work due to a bug in scarpet
             'final_heal_amount' -> 10,
-            'start_invul_time' -> 20*60,
+            'start_invul_time' -> 60,
             // 'cut_clean' -> false,
         },
         'teams' -> {
@@ -423,7 +423,7 @@ game_start() -> (
             ,
             reset_player(_);
             modify(_, 'gamemode', 'survival');
-            modify(_, 'effect', 'resistance', global_settings:'other':'start_invul_time', 255, false, true);
+            modify(_, 'effect', 'resistance', global_settings:'other':'start_invul_time'*20, 255, false, true);
         );
     );
     update_teams();
