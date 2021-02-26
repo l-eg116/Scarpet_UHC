@@ -714,6 +714,15 @@ __on_tick() -> (
 
             if(global_status:'time'%20 == 0, update_border());
 
+            if(
+            global_status:'total_teams' == 1 && global_status:'total_players' == 1 && player_count('', 0, 1) == 0,
+                game_end(),
+            global_status:'total_teams' == 1 && global_status:'total_players' > 1 && player_count('', 0, 1) <= 1,
+                game_end(),
+            global_status:'total_teams' > 1 && global_status:'total_players' > 1 && team_count(0, 1) <= 1,
+                game_end(),
+            );
+
             global_status:'time' += 1;
         ),
     );
