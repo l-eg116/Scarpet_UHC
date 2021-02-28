@@ -23,6 +23,8 @@ __config()-> {
 
         'game top <players>' -> ['comm_game_top'],
         'game start' -> ['comm_game_start'],
+        'game heal <players>' -> ['comm_game_heal', 20],
+        'game heal <players> <amount>' -> ['comm_game_heal'],
     },
     'arguments' -> {
         'team' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
@@ -33,6 +35,8 @@ __config()-> {
         'category' -> {'type' -> 'term', 'suggester' -> _(args) -> (keys(global_settings))},
         'setting' -> {'type' -> 'term', 'suggester' -> _(args) -> (keys(global_settings:(args:'category')))},
         'settingValue' -> {'type' -> 'float', 'suggester' -> _(args) -> [global_settings:(args:'category'):(args:'setting')]},
+    
+        'amount' -> {'type' -> 'int', 'min' -> -20, 'max' -> 20, 'suggest' -> [10]},
     },
 };
 
@@ -271,6 +275,13 @@ comm_game_top(players) -> (
         );
         modify(player, 'effect', 'resistance', 20*10, 255, false, true);
     );
+);
+
+comm_game_heal(players, amount) -> (
+    count = for(players, 
+        modify(player(_), 'health', player(_)~'health' + amount)
+    );
+    print(str('%d player%s healed', count, if(count == 1, ' was', 's were')));
 );
 
 // # Hub generation
