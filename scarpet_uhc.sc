@@ -44,7 +44,7 @@ __on_start() -> (
     load_status();
     load_settings();
     load_players();
-    generate_hub();
+    if(global_status:'game'=='pending', generate_hub());
     bossbar('scarpet_uhc:info_bar');
     scoreboard_add('health', 'health');
     scoreboard_display('list', 'health');
@@ -54,6 +54,12 @@ __on_close() -> (
     save_status();
     save_settings();
     save_players();
+);
+
+_reset() -> (
+    global_status:'game' = 'pending';
+    generate_hub();
+    for(player('all'), modify(_, 'location', 0, 205, 0, 0, 0); modify(_, 'gamemode', 'adventure'));
 );
 
 // # Loading and saving
