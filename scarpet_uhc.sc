@@ -25,6 +25,9 @@ __config()-> {
         'game start' -> ['comm_game_start'],
         'game heal <players>' -> ['comm_game_heal', 20],
         'game heal <players> <amount>' -> ['comm_game_heal'],
+        'game revive <players>' -> ['comm_game_revive', 10, null],
+        'game revive <players> <health>' -> ['comm_game_revive', null],
+        'game revive <players> <health> <surfacelocation>' -> ['comm_game_revive'],
     },
     'arguments' -> {
         'team' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
@@ -37,6 +40,7 @@ __config()-> {
         'settingValue' -> {'type' -> 'float', 'suggester' -> _(args) -> [global_settings:(args:'category'):(args:'setting')]},
     
         'amount' -> {'type' -> 'int', 'min' -> -20, 'max' -> 20, 'suggest' -> [10]},
+        'health' -> {'type' -> 'int', 'min' -> 1, 'max' -> 20, 'suggest' -> [10]},
     },
 };
 
@@ -290,6 +294,17 @@ comm_game_heal(players, amount) -> (
     print(str('%d player%s healed', count, if(count == 1, ' was', 's were')));
 );
 
+comm_game_revive(players, health, location) -> (
+    count = for(players, 
+        if(!global_players:(player(_)~'uuid'):'alive' && global_players:(player(_)~'uuid'):'online' && !global_players:(player(_)~'uuid'):'team' != 'spectator',
+            revive(_, health, location);
+            print(player('all'), str('%s has been revived !', _));
+            sound('minecraft:entity.zombie_villager.converted', [0, 0, 0], 99999, 1, 'player');
+        );
+    );
+    print(str('%d player%s revived', count, if(count == 1, ' was', 's were')));
+);
+
 // # Hub generation
 shiny_floor()->(
     blocks = ['orange','magenta','light_blue','yellow','lime','pink','cyan','purple','blue','brown','green','red','white'] + '_stained_glass';
@@ -481,6 +496,27 @@ reset_player(player) -> (
     run(str('clear %s', player));
     run(str('recipe take %s *', player));
     run(str('advancement revoke %s everything', player));
+);
+
+revive(player, health, location) -> (
+    player = player(player);
+    uuid = player~'uuid';
+    
+    if(
+    length(location) <= 1 && player_listing(global_players:uuid:'team', true, true),
+        location = entity_id(player_listing(global_players:uuid:'team', true, true):floor(rand(99)))~'location',
+    length(location) == 2,
+        location = [floor(location:0) + 0.5, top('motion', [location:0, 0, location:1]), floor(location:1) + 0.5, 0, 0],
+    ,
+        location = [0.5, top('motion', [0, 0, 0]), 0.5, 0, 0];
+    );
+
+    modify(player, 'health', health);
+    modify(player, 'location', location);
+    modify(player, 'gamemode', 'survival');
+    modify(player, 'effect', 'resistance', 20*10, 255, false, true);
+    global_players:uuid:'alive' = true;
+    update_teams(uuid);
 );
 
 update_gamerules() -> (
