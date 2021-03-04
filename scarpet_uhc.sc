@@ -175,6 +175,11 @@ save_players() -> (
 
 // # Commands
 comm_team_join(players, team) -> (
+    if(global_status:'game' != 'pending',
+        print(format('r You cannot use this command now'));
+        return();
+    );
+
     count = for(players,
         team_join(player(_), team);
     );
@@ -182,6 +187,11 @@ comm_team_join(players, team) -> (
 );
 
 comm_team_empty(team) -> (
+    if(global_status:'game' != 'pending',
+        print(format('r You cannot use this command now'));
+        return();
+    );
+
     count = for(keys(global_players),
         if(global_players:_:'team' == team,
             global_players:_:'team' = 'spectator';
@@ -193,6 +203,11 @@ comm_team_empty(team) -> (
 );
 
 comm_team_randomize(team_size, force) -> (
+    if(global_status:'game' != 'pending',
+        print(format('r You cannot use this command now'));
+        return();
+    );
+    
     if(force, 
         for(keys(global_players),
             global_players:_:'team' = 'spectator'
@@ -220,6 +235,11 @@ comm_team_randomize(team_size, force) -> (
 );
 
 comm_settings_reset() -> (
+    if(global_status:'game' != 'pending',
+        print(format('r You cannot use this command now'));
+        return();
+    );
+    
     global_settings = {};
     save_settings();
     load_settings();
@@ -228,6 +248,11 @@ comm_settings_reset() -> (
 );
 
 comm_settings_reload() -> (
+    if(global_status:'game' != 'pending',
+        print(format('r You cannot use this command now'));
+        return();
+    );
+    
     load_settings();
     print('All settings were reloaded from settings.json');
 );
@@ -245,6 +270,11 @@ comm_settings_list(categories) -> (
 );
 
 comm_settings_change(category, setting, value) -> (
+    if(global_status:'game' != 'pending',
+        print(format('r You cannot use this command now'));
+        return();
+    );
+    
     value = number(value);
     if(global_settings~category && global_settings:category~setting && value != null,
         global_settings:category:setting = value;
@@ -258,7 +288,7 @@ comm_settings_change(category, setting, value) -> (
 comm_generate_world() -> (
     border = global_settings:'border':'start';
     command = str('/world_generator start %d %d %d %d __ 20 1200', -border, -border, border, border);
-    print(format(' Use world_generator app to pregenerate your world . Here is a cool premade command : ', 'i ' + command, '^ Click to execute !', '?' + command));
+    print(format(' Use world_generator app to pregenerate your world. Here is a cool premade command : ', 'i ' + command, '^ Click to execute !', '?' + command));
 );
 
 comm_game_start() -> (
@@ -270,6 +300,11 @@ comm_game_start() -> (
 );
 
 comm_game_top(players) -> (
+    if(global_status:'game' == 'pending',
+        print(format('r You cannot use this command now'));
+        return();
+    );
+    
     for(players, 
         player = player(_);
 
@@ -288,6 +323,11 @@ comm_game_top(players) -> (
 );
 
 comm_game_heal(players, amount) -> (
+    if(global_status:'game' == 'pending',
+        print(format('r You cannot use this command now'));
+        return();
+    );
+    
     count = for(players, 
         modify(player(_), 'health', player(_)~'health' + amount)
     );
@@ -295,6 +335,11 @@ comm_game_heal(players, amount) -> (
 );
 
 comm_game_revive(players, health, location) -> (
+    if(global_status:'game' == 'pending',
+        print(format('r You cannot use this command now'));
+        return();
+    );
+    
     count = for(players, 
         if(!global_players:(player(_)~'uuid'):'alive' && global_players:(player(_)~'uuid'):'online' && !global_players:(player(_)~'uuid'):'team' != 'spectator',
             revive(_, health, location);
