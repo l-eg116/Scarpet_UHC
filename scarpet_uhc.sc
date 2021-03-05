@@ -28,6 +28,7 @@ __config()-> {
         'game revive <players>' -> ['comm_game_revive', 10, null],
         'game revive <players> <health>' -> ['comm_game_revive', null],
         'game revive <players> <health> <surfacelocation>' -> ['comm_game_revive'],
+        'game trigger <event>' -> ['comm_game_trigger'],
     },
     'arguments' -> {
         'team' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
@@ -41,6 +42,7 @@ __config()-> {
     
         'amount' -> {'type' -> 'int', 'min' -> -20, 'max' -> 20, 'suggest' -> [10]},
         'health' -> {'type' -> 'int', 'min' -> 1, 'max' -> 20, 'suggest' -> [10]},
+        'event' -> {'type' -> 'term', 'suggester' -> _(args) -> (keys(global_settings:'timer'))},
     },
 };
 
@@ -348,6 +350,28 @@ comm_game_revive(players, health, location) -> (
         );
     );
     print(str('%d player%s revived', count, if(count == 1, ' was', 's were')));
+);
+
+comm_game_trigger(event) -> (
+    if(global_status:'game' != 'started',
+        print(format('r You cannot use this command now'));
+        return();
+    );
+
+    for(keys(global_settings:'timer'),
+        if(_ == event,
+            if(global_settings:'timer':_ < global_status:'time' && global_settings:'timer':_ != -1,
+                print(format('r This event already happened'));
+                return();
+            ,
+                global_settings:'timer':_ = global_status:'time';
+                print('Event triggered');
+                return();
+            );
+        );
+    );
+
+    print(format('r This event does not exist'));
 );
 
 // # Hub generation
