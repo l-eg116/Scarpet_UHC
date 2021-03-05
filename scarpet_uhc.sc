@@ -65,7 +65,7 @@ __on_close() -> (
 _reset() -> (
     global_status:'game' = 'pending';
     generate_hub();
-    for(player('all'), modify(_, 'location', 0, 205, 0, 0, 0); modify(_, 'gamemode', 'adventure'));
+    for(player('all'), modify(_, 'location', 0, 203, 0, 0, 0); modify(_, 'gamemode', 'adventure'));
 );
 
 // # Loading and saving
@@ -520,7 +520,7 @@ game_start() -> (
 
         if(global_players:(_~'uuid'):'team' == 'spectator',
             modify(_, 'gamemode', 'spectator');
-            modify(_, 'location', 0, 205, 0, 0, 0);
+            modify(_, 'location', 0, 203, 0, 0, 0);
             ,
             reset_player(_);
             modify(_, 'gamemode', 'survival');
@@ -651,7 +651,7 @@ spread_teams(coords) -> (
 
     for(team_listing(1, 1), i = _i;
         for(player_listing(_, true, true),
-            modify(entity_id(_), 'location', 0, 205, 0, 0, 0);
+            modify(entity_id(_), 'location', 0, 203, 0, 0, 0);
             modify(entity_id(_), 'pos', coords:i + [0.5, 0.5, 0.5]);
         );
     );
