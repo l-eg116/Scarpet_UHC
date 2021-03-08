@@ -543,7 +543,7 @@ game_start() -> (
     update_teams();
 
     update_gamerules();
-    day_time(0); // TODO
+    if(global_settings:'gamerules':'daylight_cycle', day_time(0), day_time(global_settings:'gamerules':'day_time'));
 
     if(global_settings:'teams':'use_distance', 
         global_settings:'teams':'start_radius' = spread_radius_from_distance()
@@ -885,6 +885,7 @@ __tick_started() -> (
     );
 
     if(global_status:'time'%20 == 0, update_border());
+    if(global_status:'time' %24000 == 0 && global_settings:'gamerules':'daylight_cycle', day_time(0));
 
     if(
     global_status:'total_teams' == 1 && global_status:'total_players' == 1 && player_count('', 0, 1) == 0,
@@ -923,7 +924,6 @@ __on_tick() -> (
     );
 
     if(!global_settings:'gamerules':'weather_cycle', weather('clear', 20*60*10));
-    if(!global_settings:'gamerules':'daylight_cycle', day_time(global_settings:'gamerules':'day_time'));
     if(!global_status:'nether',
         for(player('all'), 
             modify(_, 'portal_timer', 0);
