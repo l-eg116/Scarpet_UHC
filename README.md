@@ -104,7 +104,7 @@ If you want your players to choose their teams by themselves, you can place wool
 
 
 ## Game
-Now that you have nicely setup your game, you can start it for good. To do so, simply use `/scarpet_uhc game start` . At this point all players will be teleported with their teams across the map, and spectators will be put in spectator mode.
+Now that you have nicely setup your game, you can start it for good. To do so, simply use `/scarpet_uhc game start` . At this point all players will be teleported with their teams across the map and spectators will be put in spectator mode.
 
 Here are a few commands that you can use while in game :
 ### `/scarpet_uhc game pause`
@@ -122,3 +122,48 @@ Heals players `amount` half-hearts (20 by default). Note that you can also damag
 
 ### `/scarpet_uhc game revive <players> [<health>] [<surfacelocation>]`
 Revives a player that died (the player must be online). You can revive the player with `amount` HP (10 by default). If no `surfacelocation` is specified, the player will respawn at the position of one of his teammates, and if none is alive and/or online, the default position is 0 0. `surfacelocation` does not take a y component, the y level is determined by the terrain.
+
+***
+### Bossbar
+During gameplay, a bossbar will appear at the top of your screen with all kind of cool info. You will find the day you are on (1 day = 20 minutes), the amount of players and teams left, as well as the border size. The time in the current day is shown in the form of the bar filling up, with one notch corresponding to 1 minute.
+> I may make it so that this bossbar is customizable later.
+
+### Events
+Events will occure at the time that you set. All of the events are signaled in chat and with some kind of sound effect.
+You will also get a reminder of when they will happen at the start of the game, 10 minutes before the event and 30 seconds before the event.
+
+### Ghosts (**Not implemented**)
+When a player disconnects during the game and if the settings `ghost_players` is set to `true`, players will be replaced with a ghost version of themself (aka carpet player shadow). This fake player will still be able to be killed and drop its stuff.
+
+### Game end
+The game will end once there is only one team left. Players disconnecting should not end the game.
+*Note : if the game was started with only one team, the game will end once there is only one player left.*
+
+
+
+# Pregenerating your world
+This should probably be on its own on another page, but it is now too late to go back (not really but I'm lazy).
+
+If you want to avoid lag during your game, you can use ~~Alt-F4~~ the **world_generator** app that is given for free with the scarpet_uhc app. In this section I will quickly go over how it works.
+
+## Using the premade command
+If you are too lazy to read the following section, you can simply type `/scarpet_uhc generate_world`, and then click on the command provided in chat to pregenerate your world. The command given will generate both overworld and nether, and fill your border.
+
+## Using your own settings
+If you want to be the big boy that decides everything on its own, and uses commands with the settings that *he* wants, this section is for you.
+
+### `/world_generator start <cornerA> <cornerB> [<inDimension>] [<chunkPerSec>] [<saveFrequency>]`
+This command will start a new world generation task. Tasks can be paused and canceled, and will keep running after a server restart. You can follow the app's progress in your server's console or with `/world_generator info`.
+
+| Argument | Default | Description
+|----------|:-------:|------------
+| `cornerA` & `cornerB` | None | Pairs of x and z coordinates that indicates the area in which the terrain should generate
+| `inDimension` | overworld | Dimensions that the app should pregenerate. Can be any usual or custom dimension name. Use `__` or `___` to pregenerate both overworld and nether, or all three default minecraft dimensions.
+| `chunkPerSec` | 20 | The amount of chunks to generate per second. Hard limit at 999 chunks per tick (not recommanded anyway).
+| `saveFrequency` | 1200 | The amount of chunks to generate between saves. It is recommanded to save every so often to make sure that you don't overload your server.
+
+#### Pro tip
+If `chunkPerSec` is set to 20, you can speed up the generation by using the carpet command `/tick warp <ticks>`, where `ticks` is the number of steps returned by `/world_generator start`. This will also work with `chunkPerSec` other than 20, but works best with the default settings.
+
+### `/world_generator pause|cancel`
+Cancels or pauses current generation task. Note that canceled tasks cannot be restarted, and you will have to start over if you want to generate the same area. Paused tasks can be resumed with the same command.
