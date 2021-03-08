@@ -4,13 +4,13 @@
     "final_heal_amount": 10,
     "solo_mode": false, //Not implemented
     "ghost_players": true, //Not implemented
-    "kill_ghosts_after": -1, //Not implemented
+    "kill_ghosts_after": -1 //Not implemented
   },
   "timer": {
     "pvp": 12000,
     "border": 108000,
     "nether_closing": -1,
-    "final_heal": -1,
+    "final_heal": -1
   },
   "gamerules": {
     "allow_nether": true,
@@ -24,18 +24,18 @@
     "player_drop_gapple": true,
     "raids": false,
     "wandering_traders": false,
-    "weather_cycle": false,
+    "weather_cycle": false
   },
   "border": {
     "start": 750,
     "speed": 0.5,
-    "end": 150,
+    "end": 150
   },
   "teams": {
     "friendly_fire": true,
     "show_nametag": true,
     "start_radius": 500,
     "use_distance": false,
-    "start_distance": 300,
+    "start_distance": 300
   }
 }
