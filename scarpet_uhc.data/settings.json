@@ -1,41 +1,41 @@
 {
   "other": {
-    "kill_ghosts_after": -1,
-    "final_heal_amount": 10,
     "start_invul_time": 60,
-    "ghost_players": true,
-    "solo_mode": false
+    "final_heal_amount": 10,
+    "solo_mode": false, //Not implemented
+    "ghost_players": true, //Not implemented
+    "kill_ghosts_after": -1, //Not implemented
   },
   "timer": {
-    "final_heal": -1,
     "pvp": 12000,
     "border": 108000,
-    "nether_closing": -1
+    "nether_closing": -1,
+    "final_heal": -1,
   },
   "gamerules": {
     "allow_nether": true,
     "announce_advancements": true,
+    "daylight_cycle": false,
+    "day_time": 6000,
+    "fire_tick": false,
+    "insomnia": false,
+    "natural_regeneration": false,
+    "patrols": false,
     "player_drop_gapple": true,
     "raids": false,
-    "weather_cycle": false,
-    "patrols": false,
-    "natural_regeneration": false,
-    "day_time": 6000,
     "wandering_traders": false,
-    "daylight_cycle": false,
-    "fire_tick": false,
-    "insomnia": false
+    "weather_cycle": false,
   },
   "border": {
+    "start": 750,
     "speed": 0.5,
     "end": 150,
-    "start": 750
   },
   "teams": {
-    "use_distance": false,
-    "start_distance": 300,
     "friendly_fire": true,
     "show_nametag": true,
-    "start_radius": 500
+    "start_radius": 500,
+    "use_distance": false,
+    "start_distance": 300,
   }
 }
