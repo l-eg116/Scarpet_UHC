@@ -11,6 +11,7 @@ If you are familiar with the carpet mod, none of this should be new.
 
 Upon logging into your world with the app installed, you should be teleported to a hub. If this does not happen, make sure that the app is loaded with `/script load scarpet_uhc` . At this point, the app is waiting for you to start the game, but before doing so you may want to edit the settings.
 
+***
 ## Settings
 All of the settings presented in this section can be modified 2 ways : 
 + Using the `/scarpet_uhc settings change <category> <setting> <value>` command
@@ -18,10 +19,10 @@ All of the settings presented in this section can be modified 2 ways :
 
 You can see all of the settings at any time using `/scarpet_uhc settings list <category>` or simply reset them using `/scarpet_uhc settings reset` .
 
-## Settings list
-Settings are of two types : `bool` or `int`. Note that all settings are saved in the form of numbers, which means that editings a boolean setting through the command will require you tu pu either 0 or 1 (for false or true, nothing new here). There also is a `float` setting among them all, for obvious reasons that you will see later.
+### Settings list
+Settings are of two types : `bool` or `int`. Note that all settings are saved in the form of numbers, which means that editings a boolean setting through the command will require you to pu either 0 or 1 (for false or true, nothing new here). There also is a `float` setting among them all, for obvious reasons that you will see later.
 
-+ ### Gamerules
++ #### Gamerules
 In this category you will find all of the gamerule related settings. These are here mostly to avoid you 10 minutes of typing commands in chat. There still is some special ones in the middle.
 
 |   Setting   |  Type  | Default |Description
@@ -40,7 +41,7 @@ In this category you will find all of the gamerule related settings. These are h
 | wandering_traders | bool | false | Just like the vanilla one
 | weather_cycle | bool | false | Just like the vanilla one
 
-+ ### Timers
++ #### Timers
 Do I really have to explain what the category is for ? Note that all timers are in ticks, where 1 second = 20 ticks, do some quick math to obtain the durations you want.
 
 Setting a timer to `0` will make it execute on start, and to `-1` will disable it completely.
@@ -52,7 +53,7 @@ Setting a timer to `0` will make it execute on start, and to `-1` will disable i
 | nether_closing | int | -1 | When the nether should close
 | final_heal | int | -1 | When the final heal should occure
 
-+ ### Border
++ #### Border
 Here you have all of the border size and speed settings. Note that sizes are a radius, so a radius of 750 would mean that players are free from 750x, 750z, to -750x, -750z.
 
 |   Setting   |  Type  | Default |Description
@@ -61,7 +62,7 @@ Here you have all of the border size and speed settings. Note that sizes are a r
 | speed | float | 0.5 | The speed at which the border should move, in blocks/sec
 | end | int | 150 | The size at which the border should stop moving
 
-+ ### Teams
++ #### Teams
 
 |   Setting   |  Type  | Default |Description
 |:------------|:------:|:-------:|-----------
@@ -71,7 +72,7 @@ Here you have all of the border size and speed settings. Note that sizes are a r
 | start_distance | int | 300 | The distance teams should have between them at the start of the game
 | use_distance | bool | false | `start_radius` and `start_distance` are incompatible, so this allows you to choose which to use. This settings should be removed at some point since it is really impractical.
 
-+ ### Other
++ #### Other
 
 |   Setting   |  Type  | Default |Description
 |:------------|:------:|:-------:|-----------
@@ -80,3 +81,19 @@ Here you have all of the border size and speed settings. Note that sizes are a r
 | solo_mode | bool | false | **Not implemented**
 | ghost_players | bool | true | **Not implemented**
 | kill_ghosts_after | int | -1 | **Not implemented**
+
+***
+## Teams
+In this app all of the teams management is done through the `/scarpet_uhc team` command. There is a total of 16 teams available, and there currently is no way to customize team names. The 16 teams are the [default minecraft teams](https://minecraft.gamepedia.com/Scoreboard#Teams) color. The app will self adjust depending on the number of teams. A team is considered as existing as soon as there is a player inside.
+### `/scarpet_uhc team join <players> <team>`
+With this command you can add players to a team, amazing !
+### `/scarpet_uhc team leave <players>`
+Make players leave teams with this one. Note that since you can select multiple entities, using `/scarpet_uhc team leave @a` will make everyone leave their team.
+### `/scarpet_uhc team empty <team>`
+Empties a team, quite self-explaining.
+### `/scarpet_uhc team randomize <teamSize> [<force>]`
+This command randomizes teams. You can choose the size you want for your teams by setting a `<teamSize>` (int) parameter. By setting `<force>` (boolean, true by default), you can choose if players that are already in a team will be dispatched in new teams (true), or if only players that are spectators will go into random teams (false).
+
+If you want your players to choose their teams by themselves, you can place wool blocks in the hub. Clicking on a wool block will make you join the team of the same color as the block. Players can leave their team by clicking on a dark/gray/light gray stained glass block.
+
+> Note : There currently is no way to play solo mode, but a game started with only one team will end when only one player remain. On the same subject, a game started with only one player will end on this player's death, usefull for testing (or if you have 0 friends).
