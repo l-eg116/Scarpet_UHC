@@ -53,7 +53,7 @@ __on_close() -> (
 wg_help(subject) -> (
 	if(
 		subject == 'help', print('help <function>  ->  This is what you are currently using'),
-		subject == 'start', print('start <cornerA> <cornerB> [inDimension] [chunkPerSec] [saveFrequency]  ->  Starts the world generation. Use __ or ___ for [inDimension] to generate the overworld and the nether or every dimension.'),
+		subject == 'start', print('start <cornerA> <cornerB> [<inDimension>] [<chunkPerSec>] [<saveFrequency>]  ->  Starts the world generation. Use __ or ___ for [inDimension] to generate the overworld and the nether or every dimension.'),
 		subject == 'pause', print('pause  ->  Pauses/Unpauses the current world generation task.'),
 		subject == 'cancel', print('cancel  ->  Cancels the current world generation task. There is no going back'),
 		subject == 'info', print('info  ->  Gives you all kind of cool info on the current generation task'),
@@ -172,7 +172,7 @@ __on_tick() -> (
 		global_step_counter += global_task:'chunk_per_tick';
 		while(global_step_counter >= 1, 999,
 			global_step_counter += -1;
-			global_task:'step' += 1;;
+			global_task:'step' += 1;
 			global_save_timer += 1;
 			
 			in_dimension(global_task:'dimension':(global_task:'current_pos':2), 
