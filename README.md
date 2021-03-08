@@ -21,7 +21,7 @@ You can see all of the settings at any time using `/scarpet_uhc settings list <c
 ## Settings list
 Settings are of two types : `bool` or `int`. Note that all settings are saved in the form of numbers, which means that editings a boolean setting through the command will require you tu pu either 0 or 1 (for false or true, nothing new here). There also is a `float` setting among them all, for obvious reasons that you will see later.
 
-+ ## Gamerules
++ ### Gamerules
 In this category you will find all of the gamerule related settings. These are here mostly to avoid you 10 minutes of typing commands in chat. There still is some special ones in the middle.
 
 |   Setting   |  Type  | Default |Description
@@ -40,7 +40,7 @@ In this category you will find all of the gamerule related settings. These are h
 | wandering_traders | bool | false | Just like the vanilla one
 | weather_cycle | bool | false | Just like the vanilla one
 
-+ ## Timers
++ ### Timers
 Do I really have to explain what the category is for ? Note that all timers are in ticks, where 1 second = 20 ticks, do some quick math to obtain the durations you want.
 
 Setting a timer to `0` will make it execute on start, and to `-1` will disable it completely.
@@ -52,7 +52,7 @@ Setting a timer to `0` will make it execute on start, and to `-1` will disable i
 | nether_closing | int | -1 | When the nether should close
 | final_heal | int | -1 | When the final heal should occure
 
-+ ## Border
++ ### Border
 Here you have all of the border size and speed settings. Note that sizes are a radius, so a radius of 750 would mean that players are free from 750x, 750z, to -750x, -750z.
 
 |   Setting   |  Type  | Default |Description
@@ -61,7 +61,7 @@ Here you have all of the border size and speed settings. Note that sizes are a r
 | speed | float | 0.5 | The speed at which the border should move, in blocks/sec
 | end | int | 150 | The size at which the border should stop moving
 
-+ ## Teams
++ ### Teams
 
 |   Setting   |  Type  | Default |Description
 |:------------|:------:|:-------:|-----------
@@ -71,7 +71,7 @@ Here you have all of the border size and speed settings. Note that sizes are a r
 | start_distance | int | 300 | The distance teams should have between them at the start of the game
 | use_distance | bool | false | `start_radius` and `start_distance` are incompatible, so this allows you to choose which to use. This settings should be removed at some point since it is really impractical.
 
-+ ## Other
++ ### Other
 
 |   Setting   |  Type  | Default |Description
 |:------------|:------:|:-------:|-----------
