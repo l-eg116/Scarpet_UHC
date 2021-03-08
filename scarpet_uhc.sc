@@ -29,6 +29,7 @@ __config()-> {
         'game revive <players> <health>' -> ['comm_game_revive', null],
         'game revive <players> <health> <surfacelocation>' -> ['comm_game_revive'],
         'game trigger <event>' -> ['comm_game_trigger'],
+        'game pause' -> ['comm_game_pause'],
     },
     'arguments' -> {
         'team' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
@@ -51,6 +52,7 @@ __on_start() -> (
     load_settings();
     load_players();
     if(global_status:'game'=='pending', generate_hub());
+    if(global_status:'game'=='started', game_pause());
     bossbar('scarpet_uhc:info_bar');
     scoreboard_add('health', 'health');
     scoreboard_display('list', 'health');
@@ -374,6 +376,17 @@ comm_game_trigger(event) -> (
     print(format('r This event does not exist'));
 );
 
+comm_game_pause() -> (
+    if(global_status:'game' == 'started',
+        game_pause();
+    , global_status:'game' == 'paused',
+        game_unpause();
+    ,
+        print(format('r You cannot use this command now'));
+        return();
+    );
+);
+
 // # Hub generation
 shiny_floor()->(
     blocks = ['orange','magenta','light_blue','yellow','lime','pink','cyan','purple','blue','brown','green','red','white'] + '_stained_glass';
@@ -530,7 +543,7 @@ game_start() -> (
     update_teams();
 
     update_gamerules();
-    day_time(0);
+    day_time(0); // TODO
 
     if(global_settings:'teams':'use_distance', 
         global_settings:'teams':'start_radius' = spread_radius_from_distance()
@@ -614,7 +627,36 @@ game_end() -> (
             display_title(_, 'title', format('n You lost !'), 10, 180, 10)
         );
     );
-    display_title(player('all'), 'subtitle', format(' Team ')+add_format_color(replace(' '+winner, '_', ' '), winner)+format('  won !'), 10, 180, 10)
+    display_title(player('all'), 'subtitle', format(' Team ')+add_format_color(replace(' '+winner, '_', ' '), winner)+format('  won !'), 10, 180, 10);
+    sound('minecraft:ui.toast.challenge_complete', [0, 0, 0], 99999, 1, 'master');
+);
+
+game_pause() -> (
+    logger('info', '[Scarpet UHC] Game paused');
+    global_status:'game' = 'paused';
+
+    for(player_listing('', 1, 1),
+        modify(entity_id(_), 'gamemode', 'spectator');
+        schedule(1, _(player, y) -> modify(player, 'y', y), entity_id(_), entity_id(_)~'y');
+    );
+    run('gamerule doDaylightCycle false');
+
+    display_title(player('all'), 'title', format('f Game paused'));
+    sound('minecraft:block.beacon.power_select', [0, 0, 0], 99999, 1, 'master');
+);
+
+game_unpause() -> (
+    logger('info', '[Scarpet UHC] Game unpaused');
+    global_status:'game' = 'started';
+
+    for(player_listing('', 1, 1),
+        modify(entity_id(_), 'gamemode', 'survival');
+        modify(entity_id(_), 'effect', 'resistance', 20*5, 255, false, true);
+    );
+    update_gamerules();
+
+    display_title(player('all'), 'title', format('d Game unpaused'));
+    sound('minecraft:block.beacon.activate', [0, 0, 0], 99999, 1, 'master');
 );
 
 // ## Team spreading
@@ -722,6 +764,17 @@ update_bossbar() -> (
                 ' Border : ', 'c '+round(global_status:'border_size'),
                 )
             );
+        , global_status:'game' == 'paused',
+            bossbar('scarpet_uhc:info_bar', 'style', 'notched_20');
+            bossbar('scarpet_uhc:info_bar', 'value', global_status:'time');
+            bossbar('scarpet_uhc:info_bar', 'max', 24000);
+            bossbar('scarpet_uhc:info_bar', 'name', 
+                format(
+                ' Day ', str('e %d', global_status:'time'/24000 + 1), '  - ',
+                'bd '+player_count('', 1, 1), 'r /'+player_count('', 0, 1), '  online - ',
+                'f Game paused',
+                )
+            );
         , global_status:'game' == 'ended',
             bossbar('scarpet_uhc:info_bar', 'style', 'progress');
             bossbar('scarpet_uhc:info_bar', 'value', 100);
@@ -804,49 +857,69 @@ event_final_heal() -> (
     sound('minecraft:entity.zombie_villager.converted', [0, 0, 0], 99999, 1, 'master');
 );
 
+// # Tick
+__tick_pending() -> (
+    for(player('all'), 
+        modify(_, 'health', 20);
+        modify(_, 'hunger', 20);
+    );
+);
+
+__tick_started() -> (
+    if(global_status:'time' == 0, event_start());
+    if(global_status:'time'%24000 == 0, event_new_day());
+    if(global_status:'time' == global_settings:'timer':'pvp', event_pvp());
+    if(global_status:'time' == global_settings:'timer':'nether_closing', event_nether_closing());
+    if(global_status:'time' == global_settings:'timer':'border', event_border_start());
+    if(global_status:'time' == global_settings:'timer':'final_heal', event_final_heal());
+    
+    for(global_settings:'timer',
+        if(global_settings:'timer':_ == global_status:'time' + 20*60*10,
+            print(player('all'), format('d '+replace(title(_), '_', ' '), '  in 10 mn'));
+            sound('minecraft:block.note_block.pling', [0, 0, 0], 99999, 1, 'master');
+        ,
+        global_settings:'timer':_ == global_status:'time' + 20*30,
+            print(player('all'), format('d '+replace(title(_), '_', ' '), '  in 30 sec'));
+            sound('minecraft:block.note_block.bell', [0, 0, 0], 99999, 1, 'master');
+        );
+    );
+
+    if(global_status:'time'%20 == 0, update_border());
+
+    if(
+    global_status:'total_teams' == 1 && global_status:'total_players' == 1 && player_count('', 0, 1) == 0,
+        game_end(),
+    global_status:'total_teams' == 1 && global_status:'total_players' > 1 && player_count('', 0, 1) <= 1,
+        game_end(),
+    global_status:'total_teams' > 1 && global_status:'total_players' > 1 && team_count(0, 1) <= 1,
+        game_end(),
+    );
+
+    global_status:'time' += 1;
+);
+
+__tick_paused() -> (
+    for(player('all'), 
+        if(_~'gamemode' == 'spectator', 
+            in_dimension(_~'dimension', 
+                schedule(0, _(player, pos) -> modify(player, 'pos', pos), _, _~'pos')
+            );
+        );
+        player = _;
+        for(_~'effect',
+            modify(player, 'effect', _:0, _:2 + 1, _:1);
+        );
+    );
+);
+
 // # Events
 __on_tick() -> (
     update_bossbar();
 
     if(
-        global_status:'game' == 'pending', (
-            for(player('all'), 
-                modify(_, 'health', 20);
-                modify(_, 'hunger', 20);
-            );
-        ),
-        global_status:'game' == 'started', (
-            if(global_status:'time' == 0, event_start());
-            if(global_status:'time'%24000 == 0, event_new_day());
-            if(global_status:'time' == global_settings:'timer':'pvp', event_pvp());
-            if(global_status:'time' == global_settings:'timer':'nether_closing', event_nether_closing());
-            if(global_status:'time' == global_settings:'timer':'border', event_border_start());
-            if(global_status:'time' == global_settings:'timer':'final_heal', event_final_heal());
-            
-            for(global_settings:'timer',
-                if(global_settings:'timer':_ == global_status:'time' + 20*60*10,
-                    print(player('all'), format('d '+replace(title(_), '_', ' '), '  in 10 mn'));
-                    sound('minecraft:block.note_block.pling', [0, 0, 0], 99999, 1, 'master');
-                ,
-                global_settings:'timer':_ == global_status:'time' + 20*30,
-                    print(player('all'), format('d '+replace(title(_), '_', ' '), '  in 30 sec'));
-                    sound('minecraft:block.note_block.bell', [0, 0, 0], 99999, 1, 'master');
-                );
-            );
-
-            if(global_status:'time'%20 == 0, update_border());
-
-            if(
-            global_status:'total_teams' == 1 && global_status:'total_players' == 1 && player_count('', 0, 1) == 0,
-                game_end(),
-            global_status:'total_teams' == 1 && global_status:'total_players' > 1 && player_count('', 0, 1) <= 1,
-                game_end(),
-            global_status:'total_teams' > 1 && global_status:'total_players' > 1 && team_count(0, 1) <= 1,
-                game_end(),
-            );
-
-            global_status:'time' += 1;
-        ),
+        global_status:'game' == 'pending', __tick_pending(),
+        global_status:'game' == 'started', __tick_started(),
+        global_status:'game' == 'paused', __tick_paused(),
     );
 
     if(!global_settings:'gamerules':'weather_cycle', weather('clear', 20*60*10));
@@ -882,6 +955,10 @@ __on_player_connects(player) -> (
         modify(player, 'hunger', 20);
         modify(player, 'saturation', 20);
         modify(player, 'invulnerable', true);
+    , global_status:'game' == 'started',
+        if(global_players:(player~'uuid'):'alive', modify(player, 'gamemode', 'survival'));
+    , global_status:'game' == 'paused',
+        if(global_players:(player~'uuid'):'alive', modify(player, 'gamemode', 'spectator'));
     );
 
     bossbar('scarpet_uhc:info_bar', 'add_player', player);
