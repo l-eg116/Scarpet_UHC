@@ -7,11 +7,14 @@ Running this app will of course require you have carpet installed on your server
 To install the app just drag it into the `scripts` folder you the world that you want to use. The file should be at `/world/scripts/scarpet_uhc.sc`. If you plan to use the world generator app, add `world_generator.sc` in the same folder.
 If you are familiar with the carpet mod, none of this should be new.
 
+## Technical notes
+This app saves itself quite often, and thus will keep settings and game state between restarts. Although it is never recommanded to restart your server in the middle of a game, it should be fine. This is also true in case of a server crash (this it when it would actually be most usefull). You should also note that in case of a restart of the app/server, the game will automatically pause.
+
 # Playing UHC
 
 Upon logging into your world with the app installed, you should be teleported to a hub. If this does not happen, make sure that the app is loaded with `/script load scarpet_uhc` . At this point, the app is waiting for you to start the game, but before doing so you may want to edit the settings.
 
-***
+
 ## Settings
 All of the settings presented in this section can be modified 2 ways : 
 + Using the `/scarpet_uhc settings change <category> <setting> <value>` command
@@ -82,7 +85,7 @@ Here you have all of the border size and speed settings. Note that sizes are a r
 | ghost_players | bool | true | **Not implemented**
 | kill_ghosts_after | int | -1 | **Not implemented**
 
-***
+
 ## Teams
 In this app all of the teams management is done through the `/scarpet_uhc team` command. There is a total of 16 teams available, and there currently is no way to customize team names. The 16 teams are the [default minecraft teams](https://minecraft.gamepedia.com/Scoreboard#Teams) color. The app will self adjust depending on the number of teams. A team is considered as existing as soon as there is a player inside.
 ### `/scarpet_uhc team join <players> <team>`
@@ -94,6 +97,28 @@ Empties a team, quite self-explaining.
 ### `/scarpet_uhc team randomize <teamSize> [<force>]`
 This command randomizes teams. You can choose the size you want for your teams by setting a `<teamSize>` (int) parameter. By setting `<force>` (boolean, true by default), you can choose if players that are already in a team will be dispatched in new teams (true), or if only players that are spectators will go into random teams (false).
 
+### Wool blocks
 If you want your players to choose their teams by themselves, you can place wool blocks in the hub. Clicking on a wool block will make you join the team of the same color as the block. Players can leave their team by clicking on a dark/gray/light gray stained glass block.
 
 > Note : There currently is no way to play solo mode, but a game started with only one team will end when only one player remain. On the same subject, a game started with only one player will end on this player's death, usefull for testing (or if you have 0 friends).
+
+
+## Game
+Now that you have nicely setup your game, you can start it for good. To do so, simply use `/scarpet_uhc game start` . At this point all players will be teleported with their teams across the map, and spectators will be put in spectator mode.
+
+Here are a few commands that you can use while in game :
+### `/scarpet_uhc game pause`
+This command will pause/unpause the game.
+When the game is paused, players are in spectator and cannot move, time stops, and the world border stops moving.
+
+### `/scarpet_uhc game trigger <event>`
+Prematurely triggers an event. Events can only be triggered once, full list of events [here](https://github.com/l-eg116/Scarpet_UHC/blob/main/README.md#timers).
+
+### `/scarpet_uhc game top <players>`
+Teleports a player to the surface. If the player is in the nether, a portal will be placed at their position. Useful if you have players stuck in the nether, or hiding at the end of the game.
+
+### `/scarpet_uhc game heal <players> [<amount>]`
+Heals players `amount` half-hearts (20 by default). Note that you can also damage players with this command by healing a negative amount of HP.
+
+### `/scarpet_uhc game revive <players> [<health>] [<surfacelocation>]`
+Revives a player that died (the player must be online). You can revive the player with `amount` HP (10 by default). If no `surfacelocation` is specified, the player will respawn at the position of one of his teammates, and if none is alive and/or online, the default position is 0 0. `surfacelocation` does not take a y component, the y level is determined by the terrain.
