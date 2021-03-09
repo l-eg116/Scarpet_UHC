@@ -12,6 +12,7 @@ __config()-> {
         'team empty <team>' -> ['comm_team_empty'],
         'team randomize <teamSize>' -> ['comm_team_randomize', true],
         'team randomize <teamSize> <force>' -> ['comm_team_randomize'],
+        'team swap <teamA> <teamB>' -> ['comm_team_swap'],
 
         'settings change <category> <setting> <settingValue>' -> ['comm_settings_change'],
         'settings reset' -> ['comm_settings_reset'],
@@ -33,6 +34,10 @@ __config()-> {
     },
     'arguments' -> {
         'team' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
+                   'dark_purple', 'dark_red', 'gold', 'gray', 'green', 'light_purple', 'red', 'yellow', 'white',]},
+        'teamA' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
+                   'dark_purple', 'dark_red', 'gold', 'gray', 'green', 'light_purple', 'red', 'yellow', 'white',]},
+        'teamB' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
                    'dark_purple', 'dark_red', 'gold', 'gray', 'green', 'light_purple', 'red', 'yellow', 'white',]},
         'teamSize' -> {'type' -> 'int', 'min' -> 1, 'suggest' -> [3]},
         'force' -> {'type' -> 'bool'},
@@ -236,6 +241,19 @@ comm_team_randomize(team_size, force) -> (
 
         if(i >= length(randomized_players), break());
     );
+
+    print('Teams randomized');
+);
+
+comm_team_swap(team1, team2) -> (
+    count = for(keys(global_players),
+        if(global_players:_:'team' == team1, global_players:_:'team' = team2,
+            global_players:_:'team' == team2, global_players:_:'team' = team1,
+        );
+    );
+    update_teams();
+
+    print(str('Swaped %d player%s from team %s to team %s', count, if(count == 1, '', 's'), team1, team2));
 );
 
 comm_settings_reset() -> (

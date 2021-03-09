@@ -96,6 +96,8 @@ Make players leave teams with this one. Note that since you can select multiple 
 Empties a team, quite self-explaining.
 ### `/scarpet_uhc team randomize <teamSize> [<force>]`
 This command randomizes teams. You can choose the size you want for your teams by setting a `<teamSize>` (int) parameter. By setting `<force>` (boolean, true by default), you can choose if players that are already in a team will be dispatched in new teams (true), or if only players that are spectators will go into random teams (false).
+### `/scarpet_uhc team swap <teamA> <teamB>`
+If for some reason players are not happy with the color of their team, this command lets you swap the colors of two teams. Team compositions with stay the same, this is just for aesthetic purposes.
 
 ### Wool blocks
 If you want your players to choose their teams by themselves, you can place wool blocks in the hub. Clicking on a wool block will make you join the team of the same color as the block. Players can leave their team by clicking on a dark/gray/light gray stained glass block.
