@@ -1,3 +1,4 @@
+// Scarpet_UHC v0.1.0-dev by l_eg
 global_players = {};
 global_settings = {};
 global_status = {};
@@ -7,6 +8,8 @@ __config()-> {
     'stay_loaded' -> 'true',
     'command_permission' -> 'ops',
     'commands' -> {
+        '' -> ['comm_root'],
+
         'team join <players> <team>' -> ['comm_team_join'],
         'team leave <players>' -> ['comm_team_join', 'spectator'],
         'team empty <team>' -> ['comm_team_empty'],
@@ -183,6 +186,13 @@ save_players() -> (
 );
 
 // # Commands
+comm_root() -> (
+    print(format('d Scarpet UHC ', ' by ', 'e l_eg'));
+    print(format(' Collaborator : ', 'bn BlackH57'));
+    print(format(' Version ', 'm 0.1.0-dev'));
+    print(format('  -> ', 'ut github.com/l-eg116/Scarpet_UHC/', '?https://github.com/l-eg116/Scarpet_UHC/'));
+);
+
 comm_team_join(players, team) -> (
     if(global_status:'game' != 'pending',
         print(format('r You cannot use this command now'));

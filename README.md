@@ -12,7 +12,7 @@ This app saves itself quite often, and thus will keep settings and game state be
 
 # Playing UHC
 
-Upon logging into your world with the app installed, you should be teleported to a hub. If this does not happen, make sure that the app is loaded with `/script load scarpet_uhc` . At this point, the app is waiting for you to start the game, but before doing so you may want to edit the settings.
+Upon logging into your world with the app installed, you should be teleported to a hub. If this does not happen, make sure that the app is loaded with `/script load scarpet_uhc` . Use `/scarpet_uhc` to see the credits and the app version. At this point, the app is waiting for you to start the game, but before doing so you may want to edit the settings.
 
 
 ## Settings
