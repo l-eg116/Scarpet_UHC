@@ -143,6 +143,7 @@ load_settings() -> (
             'final_heal_amount' -> 10,
             'start_invul_time' -> 60,
             // 'cut_clean' -> false,
+            'enchanted_gapple' -> false,
         },
         'teams' -> {
             'friendly_fire' -> true,
@@ -727,45 +728,6 @@ spread_teams(coords) -> (
     );
 );
 
-// # Joining a team
-__on_player_right_clicks_block(player, item_tuple, hand, block, face, hitvec) -> (
-    if(global_status:'game' == 'pending',
-        block_to_team = {
-            'light_gray_stained_glass' -> 'spectator',
-            'gray_stained_glass' -> 'spectator',
-            'black_stained_glass' -> 'spectator',
-
-            'light_blue_wool' -> 'aqua',
-            'black_wool' -> 'black',
-            'blue_wool' -> 'blue',
-            'cyan_wool' -> 'dark_aqua',
-            'purple_wool' -> 'dark_blue',
-            'gray_wool' -> 'dark_gray',
-            'green_wool' -> 'dark_green',
-            'magenta_wool' -> 'dark_purple',
-            'brown_wool' -> 'dark_red',
-            'orange_wool' -> 'gold',
-            'light_gray_wool' -> 'gray',
-            'lime_wool' -> 'green',
-            'pink_wool' -> 'light_purple',
-            'red_wool' -> 'red',
-            'yellow_wool' -> 'yellow',
-            'white_wool' -> 'white',
-        };
-
-        if(block_to_team~str(block),
-            team_join(player, block_to_team:str(block));
-
-            if(block_to_team:str(block) == 'spectator',
-                display_title(player, 'actionbar', format('f You are now a spectator', ));
-                ,
-                team_name = replace(block_to_team:str(block), '_', ' ');
-                display_title(player, 'actionbar', add_format_color(' You joined team '+team_name, block_to_team:str(block)));
-            );
-        );
-    );
-);
-
 // # Bossbar
 update_bossbar() -> (
     bossbar('scarpet_uhc:info_bar', 'color', 'red');
@@ -1033,6 +995,58 @@ __on_player_dies(player) -> (
             global_players:(player~'uuid'):'alive' = false;
             update_teams(player~'uuid');
         ), player);
+    );
+);
+
+__on_player_right_clicks_block(player, item_tuple, hand, block, face, hitvec) -> (
+    if(global_status:'game' == 'pending',
+        block_to_team = {
+            'light_gray_stained_glass' -> 'spectator',
+            'gray_stained_glass' -> 'spectator',
+            'black_stained_glass' -> 'spectator',
+
+            'light_blue_wool' -> 'aqua',
+            'black_wool' -> 'black',
+            'blue_wool' -> 'blue',
+            'cyan_wool' -> 'dark_aqua',
+            'purple_wool' -> 'dark_blue',
+            'gray_wool' -> 'dark_gray',
+            'green_wool' -> 'dark_green',
+            'magenta_wool' -> 'dark_purple',
+            'brown_wool' -> 'dark_red',
+            'orange_wool' -> 'gold',
+            'light_gray_wool' -> 'gray',
+            'lime_wool' -> 'green',
+            'pink_wool' -> 'light_purple',
+            'red_wool' -> 'red',
+            'yellow_wool' -> 'yellow',
+            'white_wool' -> 'white',
+        };
+
+        if(block_to_team~str(block),
+            team_join(player, block_to_team:str(block));
+
+            if(block_to_team:str(block) == 'spectator',
+                display_title(player, 'actionbar', format('f You are now a spectator', ));
+                ,
+                team_name = replace(block_to_team:str(block), '_', ' ');
+                display_title(player, 'actionbar', add_format_color(' You joined team '+team_name, block_to_team:str(block)));
+            );
+        );
+    );
+
+    if(!global_settings:'other':'enchanted_gapple' && inventory_size(block),
+        while( (slot = inventory_find(block, 'enchanted_golden_apple', slot)) != null, inventory_size(block),
+            inventory_set(block, slot, inventory_get(block, slot):1, 'golden_apple');
+        );
+    );
+);
+
+__on_player_uses_item(player, item_tuple, hand) -> (
+    if(!global_settings:'other':'enchanted_gapple' && item_tuple:0 == 'enchanted_golden_apple',
+        while( (slot = inventory_find(player, 'enchanted_golden_apple', slot)) != null, 41,
+            inventory_set(player, slot, inventory_get(player, slot):1, 'golden_apple');
+        );
     );
 );
 

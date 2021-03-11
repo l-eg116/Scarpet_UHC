@@ -2,6 +2,7 @@
   "other": {
     "start_invul_time": 60,
     "final_heal_amount": 10,
+    "enchanted_gapple": false,
     "solo_mode": false, //Not implemented
     "ghost_players": true, //Not implemented
     "kill_ghosts_after": -1 //Not implemented
