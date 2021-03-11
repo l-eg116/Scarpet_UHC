@@ -51,7 +51,7 @@ __config()-> {
     
         'amount' -> {'type' -> 'int', 'min' -> -20, 'max' -> 20, 'suggest' -> [10]},
         'health' -> {'type' -> 'int', 'min' -> 1, 'max' -> 20, 'suggest' -> [10]},
-        'event' -> {'type' -> 'term', 'suggester' -> _(args) -> (keys(global_settings:'timer'))},
+        'event' -> {'type' -> 'term', 'suggester' -> _(args) -> (keys(global_settings:'timers'))},
     },
 };
 
@@ -115,7 +115,7 @@ load_settings() -> (
             'end' -> 150,
             'speed' -> 0.5,
         },
-        'timer' -> {
+        'timers' -> {
             'border' -> 20*60*90, // aka 90 minutes
             'nether_closing' -> -1,
             'final_heal' -> -1,
@@ -390,13 +390,13 @@ comm_game_trigger(event) -> (
         return();
     );
 
-    for(keys(global_settings:'timer'),
+    for(keys(global_settings:'timers'),
         if(_ == event,
-            if(global_settings:'timer':_ < global_status:'time' && global_settings:'timer':_ != -1,
+            if(global_settings:'timers':_ < global_status:'time' && global_settings:'timers':_ != -1,
                 print(format('r This event already happened'));
                 return();
             ,
-                global_settings:'timer':_ = global_status:'time';
+                global_settings:'timers':_ = global_status:'time';
                 print('Event triggered');
                 return();
             );
@@ -806,12 +806,12 @@ event_new_day() -> (
 
 event_start() -> (
     print(player('all'), format('db Game started !'));
-    print(player('all'), format('  - PvP : ', str('r %d min', global_settings:'timer':'pvp'/1200)));
-    print(player('all'), format('  - Border : ', str('p %d min', global_settings:'timer':'border'/1200)));
-    if(global_settings:'timer':'nether_closing'>0, 
-        print(player('all'), format('  - Nether closing : ', str('e %d min', global_settings:'timer':'nether_closing'/1200))));
-    if(global_settings:'timer':'final_heal'>0, 
-        print(player('all'), format('  - Final heal : ', str('d %d min', global_settings:'timer':'final_heal'/1200))));
+    print(player('all'), format('  - PvP : ', str('r %d min', global_settings:'timers':'pvp'/1200)));
+    print(player('all'), format('  - Border : ', str('p %d min', global_settings:'timers':'border'/1200)));
+    if(global_settings:'timers':'nether_closing'>0, 
+        print(player('all'), format('  - Nether closing : ', str('e %d min', global_settings:'timers':'nether_closing'/1200))));
+    if(global_settings:'timers':'final_heal'>0, 
+        print(player('all'), format('  - Final heal : ', str('d %d min', global_settings:'timers':'final_heal'/1200))));
     
     print(player('all'), 'Good luck !');
 );
@@ -859,17 +859,17 @@ __tick_pending() -> (
 __tick_started() -> (
     if(global_status:'time' == 0, event_start());
     if(global_status:'time'%24000 == 0, event_new_day());
-    if(global_status:'time' == global_settings:'timer':'pvp', event_pvp());
-    if(global_status:'time' == global_settings:'timer':'nether_closing', event_nether_closing());
-    if(global_status:'time' == global_settings:'timer':'border', event_border_start());
-    if(global_status:'time' == global_settings:'timer':'final_heal', event_final_heal());
+    if(global_status:'time' == global_settings:'timers':'pvp', event_pvp());
+    if(global_status:'time' == global_settings:'timers':'nether_closing', event_nether_closing());
+    if(global_status:'time' == global_settings:'timers':'border', event_border_start());
+    if(global_status:'time' == global_settings:'timers':'final_heal', event_final_heal());
     
-    for(global_settings:'timer',
-        if(global_settings:'timer':_ == global_status:'time' + 20*60*10,
+    for(global_settings:'timers',
+        if(global_settings:'timers':_ == global_status:'time' + 20*60*10,
             print(player('all'), format('d '+replace(title(_), '_', ' '), '  in 10 mn'));
             sound('minecraft:block.note_block.pling', [0, 0, 0], 99999, 1, 'master');
         ,
-        global_settings:'timer':_ == global_status:'time' + 20*30,
+        global_settings:'timers':_ == global_status:'time' + 20*30,
             print(player('all'), format('d '+replace(title(_), '_', ' '), '  in 30 sec'));
             sound('minecraft:block.note_block.bell', [0, 0, 0], 99999, 1, 'master');
         );
