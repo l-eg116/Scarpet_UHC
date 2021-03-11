@@ -144,6 +144,7 @@ load_settings() -> (
             'start_invul_time' -> 60,
             // 'cut_clean' -> false,
             'enchanted_gapple' -> false,
+            'suspicious_stew' -> false,
         },
         'teams' -> {
             'friendly_fire' -> true,
@@ -1047,6 +1048,15 @@ __on_player_uses_item(player, item_tuple, hand) -> (
         while( (slot = inventory_find(player, 'enchanted_golden_apple', slot)) != null, 41,
             inventory_set(player, slot, inventory_get(player, slot):1, 'golden_apple');
         );
+    );
+    
+    if(!global_settings:'other':'suspicious_stew' && item_tuple:0 == 'suspicious_stew' && parse_nbt(item_tuple:2):'Effects':0 == {'EffectId'->10, 'EffectDuration'->160},
+        while( (slot = inventory_find(player, 'suspicious_stew', slot)) != null, 41,
+            if(parse_nbt(inventory_get(player, slot):2):'Effects':0 == {'EffectId'->10, 'EffectDuration'->160},
+                inventory_set(player, slot, inventory_get(player, slot):1, 'suspicious_stew');
+            );
+        );
+        display_title(player, 'actionbar', format('r Suspicious stew regeneration has been disabled'));
     );
 );
 

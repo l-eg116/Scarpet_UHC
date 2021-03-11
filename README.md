@@ -82,6 +82,7 @@ Here you have all of the border size and speed settings. Note that sizes are a r
 | start_invul_time | int | 60 | The length in seconds of the invulnerability given at the start of the game, setting this to 0 is not a good idea since players can spawn on trees
 | final_heal_amount | int | 10 | How much players should be healed by the final heal in half hearts (10 = 5 hearts), negative values should work...
 | enchanted_gapple | bool | false | If players should be allowed to have/eat enchanted golden apples. If set to false, all notch apples will be replaced by regular golden apples.
+| suspicious_stew | bool | false | Regeneration using suspicious stew is disabled. Other effects are not disabled.
 | solo_mode | bool | false | **Not implemented**
 | ghost_players | bool | true | **Not implemented**
 | kill_ghosts_after | int | -1 | **Not implemented**
