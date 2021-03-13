@@ -4,7 +4,7 @@
     "final_heal_amount": 10,
     "enchanted_gapple": false,
     "suspicious_stew": false,
-    "solo_mode": false, //Not implemented
+    "solo_mode": false,
     "ghost_players": true, //Not implemented
     "kill_ghosts_after": -1 //Not implemented
   },

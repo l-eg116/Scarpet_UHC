@@ -200,6 +200,10 @@ comm_team_join(players, team) -> (
         print(format('r You cannot use this command now'));
         return();
     );
+    if(global_settings:'other':'solo_mode',
+        print(format('r You are in solo mode'));
+        return();
+    );
 
     count = for(players,
         team_join(player(_), team);
@@ -210,6 +214,10 @@ comm_team_join(players, team) -> (
 comm_team_empty(team) -> (
     if(global_status:'game' != 'pending',
         print(format('r You cannot use this command now'));
+        return();
+    );
+    if(global_settings:'other':'solo_mode',
+        print(format('r You are in solo mode'));
         return();
     );
 
@@ -226,6 +234,10 @@ comm_team_empty(team) -> (
 comm_team_randomize(team_size, force) -> (
     if(global_status:'game' != 'pending',
         print(format('r You cannot use this command now'));
+        return();
+    );
+    if(global_settings:'other':'solo_mode',
+        print(format('r You are in solo mode'));
         return();
     );
     
@@ -258,6 +270,14 @@ comm_team_randomize(team_size, force) -> (
 );
 
 comm_team_swap(team1, team2) -> (
+    if(global_status:'game' != 'pending',
+        print(format('r You cannot use this command now'));
+        return();
+    );
+    if(global_settings:'other':'solo_mode',
+        print(format('r You are in solo mode'));
+        return();
+    );
     count = for(keys(global_players),
         if(global_players:_:'team' == team1, global_players:_:'team' = team2,
             global_players:_:'team' == team2, global_players:_:'team' = team1,
@@ -314,6 +334,7 @@ comm_settings_change(category, setting, value) -> (
         global_settings:category:setting = value;
         save_settings();
         print(str('Changed setting %s in "%s" to %s', setting, category, value));
+        if(setting = 'solo_mode' && value, for(player('all'), team_join(_, str(_))), for(player('all'), team_join(_, 'spectator'))); // TODO Change this spaghetti code
         ,
         print(format('r The setting that you tried to change does not exist, or you tried to put in a wrong value'));
     );
@@ -506,6 +527,7 @@ add_format_color(text, color) -> (
         color == 'red', return(format('r'+text)),
         color == 'yellow', return(format('y'+text)),
         color == 'white', return(format('w'+text)),
+        return(format(text))
     );
 );
 
@@ -657,7 +679,11 @@ game_end() -> (
             display_title(_, 'title', format('n You lost !'), 10, 180, 10)
         );
     );
-    display_title(player('all'), 'subtitle', format(' Team ')+add_format_color(replace(' '+winner, '_', ' '), winner)+format('  won !'), 10, 180, 10);
+    if(global_settings:'other':'solo_mode',
+        display_title(player('all'), 'subtitle', format(' '+winner+' won !'), 10, 180, 10);
+    ,
+        display_title(player('all'), 'subtitle', format(' Team ')+add_format_color(replace(' '+winner, '_', ' '), winner)+format('  won !'), 10, 180, 10);
+    );
     sound('minecraft:ui.toast.challenge_complete', [0, 0, 0], 99999, 1, 'master');
 );
 
@@ -734,46 +760,88 @@ update_bossbar() -> (
     bossbar('scarpet_uhc:info_bar', 'color', 'red');
     bossbar('scarpet_uhc:info_bar', 'visible', true);
 
-    if(
-        global_status:'game' == 'pending',
-            bossbar('scarpet_uhc:info_bar', 'style', 'progress');
-            bossbar('scarpet_uhc:info_bar', 'value', 0);
-            bossbar('scarpet_uhc:info_bar', 'max', 100);
-            bossbar('scarpet_uhc:info_bar', 'name', 
-                format('d Scarpet UHC', '  - ', 'br '+player_count('', 1, 0), 'gi /', 'gi '+length(player('all')), 'n  players',
-                ' , ', 'mb '+team_count(1, 0), 'p  teams')
-            );
-        , global_status:'game' == 'started',
-            bossbar('scarpet_uhc:info_bar', 'style', 'notched_20');
-            bossbar('scarpet_uhc:info_bar', 'value', global_status:'time');
-            bossbar('scarpet_uhc:info_bar', 'max', 24000);
-            bossbar('scarpet_uhc:info_bar', 'name', 
-                format(
-                ' Day ', str('e %d', global_status:'time'/24000 + 1), '  - ',
-                'bd '+player_count('', 0, 1), 'r /'+global_status:'total_players', '  alive - ',
-                'mb '+team_count(0, 1), 'p /'+global_status:'total_teams', '  teams - ',
-                ' Border : ', 'c '+round(global_status:'border_size'),
-                )
-            );
-        , global_status:'game' == 'paused',
-            bossbar('scarpet_uhc:info_bar', 'style', 'notched_20');
-            bossbar('scarpet_uhc:info_bar', 'value', global_status:'time');
-            bossbar('scarpet_uhc:info_bar', 'max', 24000);
-            bossbar('scarpet_uhc:info_bar', 'name', 
-                format(
-                ' Day ', str('e %d', global_status:'time'/24000 + 1), '  - ',
-                'bd '+player_count('', 1, 1), 'r /'+player_count('', 0, 1), '  online - ',
-                'f Game paused',
-                )
-            );
-        , global_status:'game' == 'ended',
-            bossbar('scarpet_uhc:info_bar', 'style', 'progress');
-            bossbar('scarpet_uhc:info_bar', 'value', 100);
-            bossbar('scarpet_uhc:info_bar', 'max', 100);
-            winner = if(has(team_listing(false, true):0), team_listing(false, true):0, null);
-            bossbar('scarpet_uhc:info_bar', 'name', 
-                format(' Team ')+add_format_color(replace(' '+winner, '_', ' '), winner)+format('  won !')
-            );
+    if(global_settings:'other':'solo_mode',
+        if(
+            global_status:'game' == 'pending',
+                bossbar('scarpet_uhc:info_bar', 'style', 'progress');
+                bossbar('scarpet_uhc:info_bar', 'value', 0);
+                bossbar('scarpet_uhc:info_bar', 'max', 100);
+                bossbar('scarpet_uhc:info_bar', 'name', 
+                    format('d Scarpet UHC', '  - ', 'br '+player_count('', 1, 0), 'gi /', 'gi '+length(player('all')), 'n  players', )
+                );
+            , global_status:'game' == 'started',
+                bossbar('scarpet_uhc:info_bar', 'style', 'notched_20');
+                bossbar('scarpet_uhc:info_bar', 'value', global_status:'time');
+                bossbar('scarpet_uhc:info_bar', 'max', 24000);
+                bossbar('scarpet_uhc:info_bar', 'name', 
+                    format(
+                    ' Day ', str('e %d', global_status:'time'/24000 + 1), '  - ',
+                    'bd '+player_count('', 0, 1), 'r /'+global_status:'total_players', '  alive - ',
+                    ' Border : ', 'c '+round(global_status:'border_size'),
+                    )
+                );
+            , global_status:'game' == 'paused',
+                bossbar('scarpet_uhc:info_bar', 'style', 'notched_20');
+                bossbar('scarpet_uhc:info_bar', 'value', global_status:'time');
+                bossbar('scarpet_uhc:info_bar', 'max', 24000);
+                bossbar('scarpet_uhc:info_bar', 'name', 
+                    format(
+                    ' Day ', str('e %d', global_status:'time'/24000 + 1), '  - ',
+                    'bd '+player_count('', 1, 1), 'r /'+player_count('', 0, 1), '  online - ',
+                    'f Game paused',
+                    )
+                );
+            , global_status:'game' == 'ended',
+                bossbar('scarpet_uhc:info_bar', 'style', 'progress');
+                bossbar('scarpet_uhc:info_bar', 'value', 100);
+                bossbar('scarpet_uhc:info_bar', 'max', 100);
+                winner = if(has(team_listing(false, true):0), team_listing(false, true):0, null);
+                bossbar('scarpet_uhc:info_bar', 'name', 
+                    format(' '+winner+' won !')
+                );
+        );
+    ,
+        if(
+            global_status:'game' == 'pending',
+                bossbar('scarpet_uhc:info_bar', 'style', 'progress');
+                bossbar('scarpet_uhc:info_bar', 'value', 0);
+                bossbar('scarpet_uhc:info_bar', 'max', 100);
+                bossbar('scarpet_uhc:info_bar', 'name', 
+                    format('d Scarpet UHC', '  - ', 'br '+player_count('', 1, 0), 'gi /', 'gi '+length(player('all')), 'n  players',
+                    ' , ', 'mb '+team_count(1, 0), 'p  teams')
+                );
+            , global_status:'game' == 'started',
+                bossbar('scarpet_uhc:info_bar', 'style', 'notched_20');
+                bossbar('scarpet_uhc:info_bar', 'value', global_status:'time');
+                bossbar('scarpet_uhc:info_bar', 'max', 24000);
+                bossbar('scarpet_uhc:info_bar', 'name', 
+                    format(
+                    ' Day ', str('e %d', global_status:'time'/24000 + 1), '  - ',
+                    'bd '+player_count('', 0, 1), 'r /'+global_status:'total_players', '  alive - ',
+                    'mb '+team_count(0, 1), 'p /'+global_status:'total_teams', '  teams - ',
+                    ' Border : ', 'c '+round(global_status:'border_size'),
+                    )
+                );
+            , global_status:'game' == 'paused',
+                bossbar('scarpet_uhc:info_bar', 'style', 'notched_20');
+                bossbar('scarpet_uhc:info_bar', 'value', global_status:'time');
+                bossbar('scarpet_uhc:info_bar', 'max', 24000);
+                bossbar('scarpet_uhc:info_bar', 'name', 
+                    format(
+                    ' Day ', str('e %d', global_status:'time'/24000 + 1), '  - ',
+                    'bd '+player_count('', 1, 1), 'r /'+player_count('', 0, 1), '  online - ',
+                    'f Game paused',
+                    )
+                );
+            , global_status:'game' == 'ended',
+                bossbar('scarpet_uhc:info_bar', 'style', 'progress');
+                bossbar('scarpet_uhc:info_bar', 'value', 100);
+                bossbar('scarpet_uhc:info_bar', 'max', 100);
+                winner = if(has(team_listing(false, true):0), team_listing(false, true):0, null);
+                bossbar('scarpet_uhc:info_bar', 'name', 
+                    format(' Team ')+add_format_color(replace(' '+winner, '_', ' '), winner)+format('  won !')
+                );
+        );
     );
 );
 
@@ -934,9 +1002,6 @@ __on_player_connects(player) -> (
         global_players:(player~'uuid') = default_player_state; 
     );
 
-    global_players:(player~'uuid'):'online' = true;
-    update_teams(player~'uuid');
-
     save_players();
     
     if(global_status:'game' == 'pending',
@@ -946,17 +1011,22 @@ __on_player_connects(player) -> (
         modify(player, 'hunger', 20);
         modify(player, 'saturation', 20);
         modify(player, 'invulnerable', true);
+        global_players:(player~'uuid'):'alive' = true;
+        if(global_settings:'other':'solo_mode', team_join(player, str(player)));
     , global_status:'game' == 'started',
         if(global_players:(player~'uuid'):'alive', modify(player, 'gamemode', 'survival'));
     , global_status:'game' == 'paused',
         if(global_players:(player~'uuid'):'alive', modify(player, 'gamemode', 'spectator'));
     );
 
+    global_players:(player~'uuid'):'online' = true;
+    update_teams(player~'uuid');
+
     bossbar('scarpet_uhc:info_bar', 'add_player', player);
 );
 
 __on_player_disconnects(player, reason) -> (
-    // if(global_status:'game' == 'started' && gloabal_settings:'other':'ghost_players' 
+    // if(global_status:'game' == 'started' && global_settings:'other':'ghost_players' 
     // && global_players:(player~'uuid'):'alive' && global_players:(player~'uuid'):'team' != 'spectator'
     // && player~'player_type' != 'fake' && player~'player_type' != 'shadow', 
     //     run(str('player %s shadow', player));
@@ -1000,7 +1070,7 @@ __on_player_dies(player) -> (
 );
 
 __on_player_right_clicks_block(player, item_tuple, hand, block, face, hitvec) -> (
-    if(global_status:'game' == 'pending',
+    if(global_status:'game' == 'pending' && !global_settings:'other':'solo_mode',
         block_to_team = {
             'light_gray_stained_glass' -> 'spectator',
             'gray_stained_glass' -> 'spectator',
@@ -1033,6 +1103,14 @@ __on_player_right_clicks_block(player, item_tuple, hand, block, face, hitvec) ->
                 team_name = replace(block_to_team:str(block), '_', ' ');
                 display_title(player, 'actionbar', add_format_color(' You joined team '+team_name, block_to_team:str(block)));
             );
+        );
+    , global_status:'game' == 'pending' && global_settings:'other':'solo_mode',
+        if(str(block)~'wool',
+            team_join(player, str(player));
+            display_title(player, 'actionbar', format(' You are now playing', ));
+        , [null, 'light_gray_stained_glass', 'gray_stained_glass', 'black_stained_glass']~str(block),
+            team_join(player, 'spectator');
+            display_title(player, 'actionbar', format('f You are now a spectator', ));
         );
     );
 

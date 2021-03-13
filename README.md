@@ -83,7 +83,7 @@ Here you have all of the border size and speed settings. Note that sizes are a r
 | final_heal_amount | int | 10 | How much players should be healed by the final heal in half hearts (10 = 5 hearts), negative values should work...
 | enchanted_gapple | bool | false | If players should be allowed to have/eat enchanted golden apples. If set to false, all notch apples will be replaced by regular golden apples.
 | suspicious_stew | bool | false | Regeneration using suspicious stew is disabled. Other effects are not disabled.
-| solo_mode | bool | false | **Not implemented**
+| solo_mode | bool | false | If true, every player will be on its own. More info in [the team section](https://github.com/l-eg116/Scarpet_UHC/blob/main/README.md#teams-1).
 | ghost_players | bool | true | **Not implemented**
 | kill_ghosts_after | int | -1 | **Not implemented**
 
@@ -104,7 +104,8 @@ If for some reason players are not happy with the color of their team, this comm
 ### Wool blocks
 If you want your players to choose their teams by themselves, you can place wool blocks in the hub. Clicking on a wool block will make you join the team of the same color as the block. Players can leave their team by clicking on a dark/gray/light gray stained glass block.
 
-> Note : There currently is no way to play solo mode, but a game started with only one team will end when only one player remain. On the same subject, a game started with only one player will end on this player's death, usefull for testing (or if you have 0 friends).
+### Solo mode
+If turned on in the settings, teams will be disabled. Every player will be in its own team. Turn on to experience true battle royale. Wool blocks still work : clicking any color will make you a player, and (light) gray/black stained glass will make you spectate. Unlike in team mode, everyone is a player by default.
 
 
 ## Game
