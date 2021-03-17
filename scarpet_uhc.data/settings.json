@@ -5,6 +5,7 @@
     "enchanted_gapple": false,
     "suspicious_stew": false,
     "solo_mode": false,
+    "teammate_direction": false,
     "ghost_players": true,
     "kill_ghosts_after": -1 //Not implemented
   },

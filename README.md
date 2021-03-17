@@ -84,6 +84,7 @@ Here you have all of the border size and speed settings. Note that sizes are a r
 | enchanted_gapple | bool | false | If players should be allowed to have/eat enchanted golden apples. If set to false, all notch apples will be replaced by regular golden apples.
 | suspicious_stew | bool | false | If regeneration using suspicious stew should be allowed. Other effects are not affected by this setting.
 | solo_mode | bool | false | If true, every player will be on its own. More info in [the team section](https://github.com/l-eg116/Scarpet_UHC/blob/main/README.md#teams-1).
+| teammate_direction | bool | false | If true, players will see in which direction their teammates are while sneaking. They will only see the direction of players in the same dimension.
 | ghost_players | bool | true | When a player disconnects, they will be replaced by a carpet fake player. This fake player can be killed to kill the real player and get access to his loot.(*)
 | kill_ghosts_after | int | -1 | **Not implemented**
 > (*)*This fake player can be disconnected with `/kill`, if you want to actually kill the player, use `/effect give <player> instant_damage 99 99`*

@@ -145,6 +145,7 @@ load_settings() -> (
             // 'cut_clean' -> false,
             'enchanted_gapple' -> false,
             'suspicious_stew' -> false,
+            'teammate_direction' -> false,
         },
         'teams' -> {
             'friendly_fire' -> true,
@@ -572,6 +573,59 @@ player_count(team, online, alive) -> (
     return(length(player_listing(team, online, alive)));
 );
 
+player_distance(player1, player2) -> (
+    return(sqrt((player1~'x' - player2~'x')^2 + (player1~'y' - player2~'y')^2 + (player1~'z' - player2~'z')^2));
+);
+
+direction(viewer, target) -> (
+	viewer_angle = round(viewer~'yaw');
+	if(viewer_angle < 0, viewer_angle += 360);
+	relative_x = target~'x' - viewer~'x';
+	relative_z = target~'z' - viewer~'z';
+	relative_angle = atan(relative_x/relative_z);
+	if(relative_x >= 0 && relative_z >= 0, relative_angle = 360 - relative_angle);
+	if(relative_x < 0 && relative_z >= 0, relative_angle = 0 - relative_angle);
+	if(relative_x < 0 && relative_z < 0, relative_angle = 180 - relative_angle);
+	if(relative_x >= 0 && relative_z < 0, relative_angle = 180 - relative_angle);
+	relative_angle += -viewer_angle;
+	if(relative_angle < 0, relative_angle += 360);
+	return(relative_angle)
+);
+
+direction_arrow(viewer, target) -> (
+	direction = direction(viewer, target);
+	if(337.5 <= direction || direction < 22.5, return('↑'));
+	if(22.5 <= direction && direction < 67.5, return('⬈'));
+	if(67.5 <= direction && direction < 112.5, return('→'));
+	if(112.5 <= direction && direction < 157.5, return('⬊'));
+	if(157.5 <= direction && direction < 202.5, return('↓'));
+	if(202.5 <= direction && direction < 247.5, return('⬋'));
+	if(247.5 <= direction && direction < 292.5, return('←'));
+	if(292.5 <= direction && direction < 337.5, return('⬉'));
+);
+
+show_directions(player) -> (
+    message = format('kb  | ');
+
+    for(player_listing(global_players:(player~'uuid'):'team', true, true), teammate = entity_id(_);
+        if(player == teammate, continue());
+
+        if(player~'dimension' == teammate~'dimension',
+            message += format('w '+teammate);
+            if(
+                (dist = player_distance(player, teammate)) < 8, message += format('c  '+direction_arrow(player, teammate)),
+                dist < 24, message += format('e  '+direction_arrow(player, teammate)),
+                dist < 40, message += format('y  '+direction_arrow(player, teammate)),
+                dist < 56, message += format('d  '+direction_arrow(player, teammate)),
+                message += format('r  '+direction_arrow(player, teammate)),
+            );
+            message += format('kb  | ');
+        );
+    );
+
+    display_title(player, 'actionbar', message);
+);
+
 // # Game start functions
 game_start() -> (
     global_status:'game' = 'starting';
@@ -946,6 +1000,12 @@ __tick_started() -> (
     if(global_status:'time'%20 == 0, update_border());
     if(global_status:'time' %24000 == 0 && global_settings:'gamerules':'daylight_cycle', day_time(0));
 
+    if(global_settings:'other':'teammate_direction',
+        for(player_listing('', true, true),
+            if(entity_id(_)~'sneaking', show_directions(entity_id(_)));
+        );    
+    );
+
     if(
     global_status:'total_teams' == 1 && global_status:'total_players' == 1 && player_count('', 0, 1) == 0,
         game_end(),
@@ -1135,6 +1195,17 @@ __on_player_uses_item(player, item_tuple, hand) -> (
             );
         );
         display_title(player, 'actionbar', format('r Suspicious stew regeneration has been disabled'));
+    );
+);
+
+__on_player_starts_sneaking(player) -> (
+    if(global_settings:'other':'teammate_direction' &&
+    global_status:'game' == 'started' &&
+    global_players:(player~'uuid'):'alive' &&
+    global_players:(player~'uuid'):'team' != 'spectator',
+
+        show_directions(player);
+    
     );
 );
 
