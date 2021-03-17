@@ -82,10 +82,11 @@ Here you have all of the border size and speed settings. Note that sizes are a r
 | start_invul_time | int | 60 | The length in seconds of the invulnerability given at the start of the game, setting this to 0 is not a good idea since players can spawn on trees
 | final_heal_amount | int | 10 | How much players should be healed by the final heal in half hearts (10 = 5 hearts), negative values should work...
 | enchanted_gapple | bool | false | If players should be allowed to have/eat enchanted golden apples. If set to false, all notch apples will be replaced by regular golden apples.
-| suspicious_stew | bool | false | Regeneration using suspicious stew is disabled. Other effects are not disabled.
+| suspicious_stew | bool | false | If regeneration using suspicious stew should be allowed. Other effects are not affected by this setting.
 | solo_mode | bool | false | If true, every player will be on its own. More info in [the team section](https://github.com/l-eg116/Scarpet_UHC/blob/main/README.md#teams-1).
-| ghost_players | bool | true | **Not implemented**
+| ghost_players | bool | true | When a player disconnects, they will be replaced by a carpet fake player. This fake player can be killed to kill the real player and get access to his loot.(*)
 | kill_ghosts_after | int | -1 | **Not implemented**
+> (*)*This fake player can be disconnected with `/kill`, if you want to actually kill the player, use `/effect give <player> instant_damage 99 99`*
 
 
 ## Teams

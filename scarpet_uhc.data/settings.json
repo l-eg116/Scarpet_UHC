@@ -5,7 +5,7 @@
     "enchanted_gapple": false,
     "suspicious_stew": false,
     "solo_mode": false,
-    "ghost_players": true, //Not implemented
+    "ghost_players": true,
     "kill_ghosts_after": -1 //Not implemented
   },
   "timer": {

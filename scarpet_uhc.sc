@@ -1026,11 +1026,11 @@ __on_player_connects(player) -> (
 );
 
 __on_player_disconnects(player, reason) -> (
-    // if(global_status:'game' == 'started' && global_settings:'other':'ghost_players' 
-    // && global_players:(player~'uuid'):'alive' && global_players:(player~'uuid'):'team' != 'spectator'
-    // && player~'player_type' != 'fake' && player~'player_type' != 'shadow', 
-    //     run(str('player %s shadow', player));
-    // ); // TODO Test this with actuals players because testing this un singleplayer is kinda hard...
+    if(global_status:'game' == 'started' && global_settings:'other':'ghost_players' 
+    && global_players:(player~'uuid'):'alive' && global_players:(player~'uuid'):'team' != 'spectator'
+    && player~'player_type' != 'fake' && player~'player_type' != 'shadow', 
+        run(str('player %s shadow', player));
+    );
 
     global_players:(player~'uuid'):'online' = false;
     update_teams(player~'uuid');
