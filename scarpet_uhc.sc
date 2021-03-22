@@ -825,7 +825,7 @@ update_bossbar() -> (
                 );
             , global_status:'game' == 'started',
                 bossbar('scarpet_uhc:info_bar', 'style', 'notched_20');
-                bossbar('scarpet_uhc:info_bar', 'value', global_status:'time');
+                bossbar('scarpet_uhc:info_bar', 'value', global_status:'time'%24000);
                 bossbar('scarpet_uhc:info_bar', 'max', 24000);
                 bossbar('scarpet_uhc:info_bar', 'name', 
                     format(
@@ -836,7 +836,7 @@ update_bossbar() -> (
                 );
             , global_status:'game' == 'paused',
                 bossbar('scarpet_uhc:info_bar', 'style', 'notched_20');
-                bossbar('scarpet_uhc:info_bar', 'value', global_status:'time');
+                bossbar('scarpet_uhc:info_bar', 'value', global_status:'time'%24000);
                 bossbar('scarpet_uhc:info_bar', 'max', 24000);
                 bossbar('scarpet_uhc:info_bar', 'name', 
                     format(
@@ -866,7 +866,7 @@ update_bossbar() -> (
                 );
             , global_status:'game' == 'started',
                 bossbar('scarpet_uhc:info_bar', 'style', 'notched_20');
-                bossbar('scarpet_uhc:info_bar', 'value', global_status:'time');
+                bossbar('scarpet_uhc:info_bar', 'value', global_status:'time'%24000);
                 bossbar('scarpet_uhc:info_bar', 'max', 24000);
                 bossbar('scarpet_uhc:info_bar', 'name', 
                     format(
@@ -878,7 +878,7 @@ update_bossbar() -> (
                 );
             , global_status:'game' == 'paused',
                 bossbar('scarpet_uhc:info_bar', 'style', 'notched_20');
-                bossbar('scarpet_uhc:info_bar', 'value', global_status:'time');
+                bossbar('scarpet_uhc:info_bar', 'value', global_status:'time'%24000);
                 bossbar('scarpet_uhc:info_bar', 'max', 24000);
                 bossbar('scarpet_uhc:info_bar', 'name', 
                     format(
