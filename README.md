@@ -102,8 +102,8 @@ This command randomizes teams. You can choose the size you want for your teams b
 ### `/scarpet_uhc team swap <teamA> <teamB>`
 If for some reason players are not happy with the color of their team, this command lets you swap the colors of two teams. Team compositions will stay the same, this is just for aesthetic purposes.
 
-### Wool blocks
-If you want your players to choose their teams by themselves, you can place wool blocks in the hub. Clicking on a wool block will make you join the team of the same color as the block. Players can leave their team by clicking on a dark/gray/light gray stained glass block.
+### `/scarpet_uhc team wool <teams>`
+If you want your players to choose their teams by themselves, you can place wool blocks in the hub. Clicking on a wool block will make you join the team of the same color as the block. Players can leave their team by clicking on a dark/gray/light gray stained glass block. This command will replace glass blocks with wool and wool with glass blocks for the teams specified in `<teams>`. `<teams>` can be `all` to swap every block or a list a team names seperated by spaces (i.e. '`blue red dark_aqua`').
 
 ### Solo mode
 If turned on in the settings, teams will be disabled. Every player will be in its own team. Turn on to experience true battle royale. Wool blocks still work : clicking any color will make you a player, and (light) gray/black stained glass will make you spectate. Unlike in team mode, everyone is a player by default.

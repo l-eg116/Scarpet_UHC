@@ -16,6 +16,7 @@ __config()-> {
         'team randomize <teamSize>' -> ['comm_team_randomize', true],
         'team randomize <teamSize> <force>' -> ['comm_team_randomize'],
         'team swap <teamA> <teamB>' -> ['comm_team_swap'],
+        'team wool <teams>' -> ['comm_team_wool'],
 
         'settings change <category> <setting> <settingValue>' -> ['comm_settings_change'],
         'settings reset' -> ['comm_settings_reset'],
@@ -42,6 +43,8 @@ __config()-> {
                    'dark_purple', 'dark_red', 'gold', 'gray', 'green', 'light_purple', 'red', 'yellow', 'white',]},
         'teamB' -> {'type' -> 'term', 'options' -> ['aqua', 'black', 'blue', 'dark_aqua', 'dark_blue', 'dark_gray', 'dark_green', 
                    'dark_purple', 'dark_red', 'gold', 'gray', 'green', 'light_purple', 'red', 'yellow', 'white',]},
+        'teams' -> {'type' -> 'text', 'suggest' -> ['aqua', 'blue', 'dark_aqua', 'dark_blue', 'dark_green', 
+                   'dark_purple', 'dark_red', 'gold', 'green', 'light_purple', 'red', 'yellow', 'white', 'all']},
         'teamSize' -> {'type' -> 'int', 'min' -> 1, 'suggest' -> [3]},
         'force' -> {'type' -> 'bool'},
 
@@ -287,6 +290,47 @@ comm_team_swap(team1, team2) -> (
     update_teams();
 
     print(str('Swaped %d player%s from team %s to team %s', count, if(count == 1, '', 's'), team1, team2));
+);
+
+comm_team_wool(teams) -> (
+    if(global_status:'game' != 'pending',
+        print(format('r You cannot use this command now'));
+        return();
+    );
+
+    team_to_color = {
+        'aqua' -> 'light_blue',
+        'black' -> 'black',
+        'blue' -> 'blue',
+        'dark_aqua' -> 'cyan',
+        'dark_blue' -> 'purple',
+        'dark_gray' -> 'gray',
+        'dark_green' -> 'green',
+        'dark_purple' -> 'magenta',
+        'dark_red' -> 'brown',
+        'gold' -> 'orange',
+        'gray' -> 'light_gray',
+        'green' -> 'lime',
+        'light_purple' -> 'pink',
+        'red' -> 'red',
+        'yellow' -> 'yellow',
+        'white' -> 'white',
+    };
+
+    if(teams == 'all', teams = join(' ', keys(team_to_color)));
+
+    for(split(' ', teams), color = team_to_color:_;
+        if(color == null, continue());
+
+        volume([-10, 200, -10], [9, 200, 9], block = block(_x, _y, _z);
+            if(
+                str(block) == color + '_stained_glass', set(block, color + '_wool'),
+                str(block) == color + '_wool', set(block, color + '_stained_glass'),
+            );
+        );
+    );
+    
+    print('Floor updated');
 );
 
 comm_settings_reset() -> (
