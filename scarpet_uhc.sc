@@ -47,7 +47,7 @@ __config()-> {
 
         'category' -> {'type' -> 'term', 'suggester' -> _(args) -> (keys(global_settings))},
         'setting' -> {'type' -> 'term', 'suggester' -> _(args) -> (keys(global_settings:(args:'category')))},
-        'settingValue' -> {'type' -> 'float', 'suggester' -> _(args) -> [global_settings:(args:'category'):(args:'setting')]},
+        'settingValue' -> {'type' -> 'term', 'suggester' -> _(args) -> [global_settings:(args:'category'):(args:'setting')]},
     
         'amount' -> {'type' -> 'int', 'min' -> -20, 'max' -> 20, 'suggest' -> [10]},
         'health' -> {'type' -> 'int', 'min' -> 1, 'max' -> 20, 'suggest' -> [10]},
@@ -330,8 +330,12 @@ comm_settings_change(category, setting, value) -> (
         return();
     );
     
-    value = number(value);
-    if(global_settings~category && global_settings:category~setting && value != null,
+    if(
+        value == 'true', value = true,
+        value == 'false', value = false,
+        value = number(value)
+    );
+    if(global_settings~category && global_settings:category~setting && type(value) == type(global_settings:category:setting),
         global_settings:category:setting = value;
         save_settings();
         print(str('Changed setting %s in "%s" to %s', setting, category, value));
@@ -1208,5 +1212,3 @@ __on_player_starts_sneaking(player) -> (
     
     );
 );
-
-__on_start();

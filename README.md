@@ -2,7 +2,7 @@
 Scarpet UHC is a cool little scarpet app that lets you play simple and fun UHCs with your friends. This app was **not** designed for big servers but as a simpler alternative to sometimes complex plugins, in an environment that allows modding and more.
 
 ## Installing Scarpet UHC
-Running this app will of course require you have carpet installed on your server, which you can download [here](https://github.com/gnembon/fabric-carpet), along with all of its installation instructions.
+Running this app will of course require you have carpet installed on your server, which you can download [here](https://github.com/gnembon/fabric-carpet), along with all of its installation instructions. This app is made for **carpet version 1.4.29** and **will not** work for version below, or at least incorrectly. It should be fine for above version but if something breaks don't blame me.
 
 To install the app just drag it into the `scripts` folder you the world that you want to use. The file should be at `/world/scripts/scarpet_uhc.sc`. If you plan to use the world generator app, add `world_generator.sc` in the same folder.
 If you are familiar with the carpet mod, none of this should be new.
@@ -23,7 +23,6 @@ All the settings presented in this section can be modified 2 ways :
 You can see all of the settings at any time using `/scarpet_uhc settings list [<category>]` or simply reset them using `/scarpet_uhc settings reset` .
 
 ### Settings list
-Settings are of two types : `bool` or `int`. Note that all settings are saved in the form of numbers, which means that editing a boolean setting through the command will require you to put either 0 or 1 (for false or true, nothing new here). There also is a `float` setting among them all, for obvious reasons that you will see later.
 
 + #### Gamerules
 In this category you will find all the gamerule related settings. These are here mostly to avoid you 10 minutes of typing commands in chat. There still are some special ones in the middle.
