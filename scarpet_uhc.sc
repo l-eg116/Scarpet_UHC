@@ -339,7 +339,12 @@ comm_settings_change(category, setting, value) -> (
         global_settings:category:setting = value;
         save_settings();
         print(str('Changed setting %s in "%s" to %s', setting, category, value));
-        if(setting = 'solo_mode' && value, for(player('all'), team_join(_, str(_))), for(player('all'), team_join(_, 'spectator'))); // TODO Change this spaghetti code
+        if(category == 'other' && setting == 'solo_mode',
+            if(value,
+                for(player('all'), team_join(_, str(_))), 
+                for(player('all'), team_join(_, 'spectator'))
+            );
+        );
         ,
         print(format('r The setting that you tried to change does not exist, or you tried to put in a wrong value'));
     );
@@ -1076,7 +1081,13 @@ __on_player_connects(player) -> (
         modify(player, 'saturation', 20);
         modify(player, 'invulnerable', true);
         global_players:(player~'uuid'):'alive' = true;
-        if(global_settings:'other':'solo_mode', team_join(player, str(player)));
+        if(global_settings:'other':'solo_mode',
+            team_join(player, str(player))
+            ,
+            if(global_players:(player~'uuid'):'team' == str(player),
+                team_join(player, 'spectator')
+            );
+        );
     , global_status:'game' == 'started',
         if(global_players:(player~'uuid'):'alive', modify(player, 'gamemode', 'survival'));
     , global_status:'game' == 'paused',
