@@ -4,7 +4,7 @@ Scarpet UHC is a cool little scarpet app that lets you play simple and fun UHCs 
 ## Installing Scarpet UHC
 Running this app will of course require you have carpet installed on your server, which you can download [here](https://github.com/gnembon/fabric-carpet), along with all of its installation instructions. This app is made for **carpet version 1.4.29** and **will not** work for version below, or at least incorrectly. It should be fine for above version but if something breaks don't blame me.
 
-To install the app just drag it into the `scripts` folder you the world that you want to use. The file should be at `/world/scripts/scarpet_uhc.sc`. If you plan to use the world generator app, add `world_generator.sc` in the same folder.
+To install the app just drag it into the `scripts` folder you the world that you want to use. The file should be at `...\world\scripts\scarpet_uhc.sc`. If you plan to use the world generator app, add `world_generator.sc` in the same folder.
 If you are familiar with the carpet mod, none of this should be new.
 
 ## Technical notes
@@ -18,7 +18,7 @@ Upon logging into your world with the app installed, you should be teleported to
 ## Settings
 All the settings presented in this section can be modified 2 ways : 
 + Using the `/scarpet_uhc settings change <category> <setting> <value>` command
-+ By changing them directly in `settings.json`, and then updating them in game using `/scarpet_uhc settings reload` . This file will automatically be generated on the app's first start, but you can edit the settings beforehand by having `settings.json` already at `...\scripts\scarpet_uhc.data\settings.json`.
++ By changing them directly in `settings.json`, and then updating them in game using `/scarpet_uhc settings reload` . This file will automatically be generated on the app's first start, but you can edit the settings beforehand by having `settings.json` already at `...\world\scripts\scarpet_uhc.data\settings.json`.
 
 You can see all of the settings at any time using `/scarpet_uhc settings list [<category>]` or simply reset them using `/scarpet_uhc settings reset` .
 
@@ -33,7 +33,6 @@ In this category you will find all the gamerule related settings. These are here
 | annonce_advancements | bool | true | Just like the vanilla one
 | daylight_cycle | bool | false | Just like the vanilla one
 | day_time | int | 6000 | Set the time of day if daylight_cycle is false
-| daylight_cycle | bool | false | Just like the vanilla one
 | fire_tick | bool | false | Just like the vanilla one, keep false to avoid lag
 | insomnia | bool | false | Just like the vanilla one, you don't want phantoms in your UHC
 | natural_regeneration | bool | false | Just like the vanilla one, here just in case
@@ -138,7 +137,7 @@ During gameplay, a bossbar will appear at the top of your screen with all kind o
 Events will occur at the time that you set. All the events are signalled in chat and with some kind of sound effect.
 You will also get a reminder of when they will happen at the start of the game, 10 minutes before the event and 30 seconds before the event.
 
-### Ghosts (**Not implemented**)
+### Ghosts
 When a player disconnects during the game and if the settings `ghost_players` is set to `true`, players will be replaced with a ghost version of themself (aka carpet player shadow). This fake player will still be able to be killed and drop its stuff.
 
 ### Game end
